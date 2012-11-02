@@ -1,0 +1,179 @@
+
+/**********/
+/* Common */
+/**********/
+
+#parentCourseName, #parentCategoryName {
+    font-size: 10pt;
+    margin-bottom: 0.7em;
+}
+
+.adminForm fieldset {
+    margin-bottom: 1.4em;
+}
+
+table.formTable td {
+    border: none;
+}
+
+.droppable-active {
+    
+}
+
+.droppable-hover {
+    outline: black dotted 1px;
+}
+
+table.translatedSlotSet {
+    border: 0;
+}
+
+table.translatedSlotSet td {
+    border: 0;
+    width: 50%;
+    padding: 0;
+    margin-right: 4pt;
+    vertical-align: top;
+}
+
+/***************/
+/* Course list */
+/***************/
+
+td.hiddenCourse {
+    font-style: italic;
+}
+
+/***************/
+/* Course view */
+/***************/
+
+div.statsLink {
+    font-size: 10pt;
+    margin-bottom: 0.7em;
+}
+
+span.tasksSolved {
+    color: green;
+}
+
+span.tasksAttempted {
+    color: olive;
+}
+
+span.totalTasks {
+    color: maroon;
+}
+
+/*************/
+/* Task list */
+/*************/
+
+td.hiddenTask {
+    font-style: italic;
+}
+
+.taskBulkOp div {
+    text-align: right;
+}
+
+/*************/
+/* Task view */
+/*************/
+
+form#taskForm input.titleField {
+    width: 95%;
+}
+
+form#taskForm textarea.descriptionField {
+    width: 95%;
+}
+
+form#taskForm input.input {
+    width: 30em;
+}
+
+.criterionCustomPart {
+    margin-top: 0.8em;
+    margin-bottom: 0.8em;
+}
+
+div.inputSecret {
+    float: right;
+}
+
+div.isQualityCriterion {
+    float: right;
+}
+
+button.delete {
+    float: right;
+    margin-top: 0.8em;
+    margin-left: 0.8em;
+}
+
+fieldset.criterionSet {
+    margin: 10pt 3pt 10pt 3pt;
+}
+
+fieldset.criterionSet.globalCriteria {
+    margin-top: 16pt;
+    margin-bottom: 16pt;
+}
+
+fieldset.input {
+    margin: 16pt 3pt 16pt 3pt;
+}
+
+form#taskForm > fieldset > legend,
+form#taskForm > div > fieldset > legend {
+    font-size: large;
+}
+
+.criterionContainer > fieldset {
+    margin-top: 6pt;
+}
+
+.criterionContainer > fieldset > legend {
+    font-size: 120%;
+}
+
+input.leftParam, .leftParam input,
+input.rightParam, .rightParam input {
+    width: 6em;
+}
+
+form#taskForm {
+    margin-bottom: 25em;
+}
+
+div#hiddenFieldDiv {
+    float: right;
+}
+
+div.testTaskLink,
+div.saveTaskLink {
+    font-weight: bold;
+    margin: 4pt;
+}
+
+/********************/
+/* Statistics views */
+/********************/
+
+th.tasksSolved {
+    width: 30%;
+}
+
+.answerDetails .preCode,
+.answerDetails .postCode {
+    color: gray;
+}
+
+/************************/
+/* Global settings view */
+/************************/
+
+fieldset.defaultCriterionMessages {
+    margin: 10pt 3pt 10pt 3pt;
+}

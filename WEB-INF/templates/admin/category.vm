@@ -1,0 +1,59 @@
+
+#set($course = $category.course)
+
+#if ($newCategory)
+    <h1>$tr.tr("new_category")</h1>
+#else
+    <h1>$utils.coalesce($category.name.getByPreference(true, $tr.locale), $tr.tr("unnamed_category_title"))</h1>
+#end
+
+<div id="parentCourseName">$utils.noEscape($tr.trp("course_%s", $utils.makeLink("$req.basePath/admin/course?id=$course.id", $utils.coalesce($course.name.getByPreference(true, $tr.locale), $tr.tr("unnamed_course_title")))))</div>
+
+#if ($newCategory)
+    #set($action = "$req.basePath/admin/createcategory")
+#else
+    #set($action = "$req.basePath/admin/updatecategory")
+#end
+
+<form id="categoryForm" action="$action" method="post">
+    <fieldset>
+        <legend>$tr.tr("category_attributes")</legend>
+        
+        #if ($newCategory)
+            <input type="hidden" name="courseId" value="$course.id" />
+        #else
+            <input type="hidden" name="id" value="$category.id" />
+        #end
+        
+        <table>
+            <tr>
+                #foreach ($locale in $supportedLocales)
+                    <td>
+                        <div><span class="label">$tr.tr("language"):</span> $locale.getDisplayName($tr.locale)</div>
+                        <div class="formField">
+                            <label for="categoryName_$locale">$tr.tr("category_name")</label>
+                            <input id="categoryName_$locale" name="categoryName[$locale]" value="$utils.maybe($category.getName($locale))" />
+                        </div>
+                    </td>
+                #end
+            </tr>
+        </table>
+        <br />
+        <button type="submit">$tr.tr("save")</button>
+        
+    </fieldset>
+</form>
+
+#if (!$can.update($category))
+    $utils.disableForm('#categoryForm')
+#end
+
+#if (!$newCategory)
+    <h2 id="taskListTitle">$tr.tr("task_list_title")</h2>
+    
+    $utils.noEscape($taskListFragment)
+    
+    #if ($can.createAny("Task"))
+        <div class="function"><a class="function" href="$req.basePath/admin/task?categoryId=$category.id">$tr.tr('new_task')</a></div>
+    #end
+#end

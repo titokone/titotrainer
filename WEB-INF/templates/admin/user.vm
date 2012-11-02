@@ -1,0 +1,129 @@
+
+#if ($newUser)
+    <h1>$tr.tr("title_new_user")</h1>
+#else
+    <h1>$tr.tr("title")</h1>
+#end
+
+#* $user is used by the header to mean the currently logged in user.
+   Here it's more convenient to have it denote the user being edited. *#
+#set($user = $theUser)
+
+#if (!$invalidFields.isEmpty())
+    <script type="text/javascript">
+    <!--
+    #literal()
+    $(document).ready(function() {
+        #end
+        var fields = ['$utils.join($invalidFields, "','")'];
+        #literal()
+        formUtils.highlightInvalidFields($('#updateUserForm')[0], fields);
+    });
+    #end
+    //-->
+    </script>
+#end
+
+#if ($newUser)
+    #set($action = "$req.getBasePath()/admin/createuser")
+#else
+    #set($action = "$req.getBasePath()/admin/updateuser")
+#end
+
+<form id="updateUserForm" method="post" action="$action" accept-charset="UTF-8">
+    <fieldset>
+        #if (!$newUser)
+            <input type="hidden" name="id" value="$user.id" />
+        #end
+        
+        <div class="formField">
+            <label for="usernameField">$tr.tr("userName")</label>
+            <input type="text" id="usernameField" name="username" value="$utils.maybe($user.username)" />
+        </div>
+        
+        <div class="formField">
+            <label for="role">$tr.tr("role")</label>
+            <select id="roleSelect" name="role">
+                #foreach ($role in $availableRoles)
+                    #if ($role == $user.parentRole)
+                        #set($selected = $utils.noEscape('selected="selected"'))
+                    #else
+                        #set($selected = '')
+                    #end
+                    <option value="$role" $selected>$role.getName($tr.locale)</option>
+                #end
+            </select>
+        </div>
+        
+        <div class="formField">
+            <label for="firstNameField">$tr.tr("firstName")</label>
+            <input type="text" id="firstNameField" name="firstName" value="$utils.maybe($user.firstName)" />
+        </div>
+        <div class="formField">
+            <label for="lastNameField">$tr.tr("lastName")</label>
+            <input type="text" id="lastNameField" name="lastName" value="$utils.maybe($user.lastName)" />
+        </div>
+        <div class="formField">
+            <label for="emailField">$tr.tr("e-mail")</label>
+            <input type="text" id="emailField" name="email" value="$utils.maybe($user.email)" />
+        </div>
+        <div class="formField">
+            <label for="studentNumberField">$tr.tr("studentNumber")</label>
+            <input type="text" id="studentNumberField" name="studentNumber" value="$utils.maybe($user.studentNumber)" />
+        </div>
+        
+        
+        <div class="formField">
+            <label for="prefLocale">$tr.tr("prefLocale")</label>
+            <select id="prefLocale" name="prefLocale">
+                #foreach ($locale in $availableLocales)
+                    #if ($locale.equals($tr.locale))
+                        #set($selected = $utils.noEscape('selected="selected"'))
+                    #else
+                        #set($selected = '')
+                    #end
+                    <option value="$locale" $selected>$locale.getDisplayLanguage($tr.locale)</option>
+                #end
+            </select>
+        </div>
+        
+        <div class="formField">
+            <label for="course">$tr.tr("course")</label>
+            <select id="course" name="courseId">
+                <option value=""></option>
+                #foreach ($course in $availableCourses)
+                    #if ($user.courseId && $user.courseId.equals($course.id))
+                        #set($selected = $utils.noEscape('selected="selected"'))
+                    #else
+                        #set($selected = '')
+                    #end
+                    <option value="$course.id" $selected>$course.getName($tr.locale)</option>
+                #end
+            </select>
+        </div>
+        
+        <div class="formField">
+            <label for="passwd">$tr.tr("set_passwd")</label>
+            #if ($newUser)
+                <input type="password" id="passwd" name="passwd" />
+            #else
+                <input type="checkbox" id="setPassword" name="setPassword" value="1" />
+                <input type="password" id="passwd" name="passwd" disabled="disabled" />
+                <script type="text/javascript">
+                <!--
+                #literal()
+                $('#setPassword').change(function() {
+                    var passwd = $('#passwd')[0];
+                    passwd.disabled = !this.checked;
+                    passwd.value = '';
+                });
+                #end
+                //-->
+                </script>
+            #end
+        </div>
+        
+        <button type="submit">$tr.tr("save_button")</button>    
+    </fieldset>
+</form>    
+    

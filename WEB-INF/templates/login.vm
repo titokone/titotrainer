@@ -1,0 +1,21 @@
+
+<div class="loginForm">
+    <form id="loginForm" method="post" action="$req.basePath/dologin" accept-charset="UTF-8">
+        <fieldset>
+            <legend>$tr.tr("login_form_title")</legend>
+            <div class="formField">
+                <label for="usernameField">$tr.tr("username")</label>
+                <input type="text" id="usernameField" name="username" />
+            </div>
+            <div class="formField">
+                <label for="passwordField">$tr.tr("password")</label>
+                <input type="password" id="passwordField" name="password" />
+            </div>
+            <button type="submit">$tr.tr("log_in_button")</button>
+        </fieldset>
+    </form>
+</div>
+
+<div class="function"><a class="function" href="$req.basePath/registration">$tr.tr("registration_link")</a></div>
+<br />
+<div class="function"><a class="function" href="$req.basePath/resetpassword">$tr.tr("forgot_password_link")</a></div>

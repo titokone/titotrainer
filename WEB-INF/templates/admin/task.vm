@@ -1,0 +1,406 @@
+
+#if ($newTask)
+    <h1>$tr.tr("new_task")</h1>
+    <div id="parentCourseName">$utils.noEscape($tr.trp("for_course_%s", $utils.makeLink("$req.basePath/admin/course?id=$course.id", $course.name.getByPreference(true, $tr.locale))))</div>
+    #if ($task.category.id)
+        <div id="parentCategoryName">$utils.noEscape($tr.trp("for_category_%s", $utils.makeLink("$req.basePath/admin/category?id=$task.category.id", $task.category.name.getByPreference(true, $tr.locale))))</div>
+    #end
+#else
+    <h1>$tr.trp("task_%s", $utils.maybe($taskName))</h1>
+    <div id="parentCourseName">$utils.noEscape($tr.trp("of_course_%s", $utils.makeLink("$req.basePath/admin/course?id=$course.id", $course.name.getByPreference(true, $tr.locale))))</div>
+    #if ($task.category.id)
+        <div id="parentCategoryName">$utils.noEscape($tr.trp("of_category_%s", $utils.makeLink("$req.basePath/admin/category?id=$task.category.id", $task.category.name.getByPreference(true, $tr.locale))))</div>
+    #end
+#end
+
+
+#if (!$newTask && !$printMode)
+    <div class="printModeLink"><a class="printModeLink" href="$req.basePath/admin/task?id=$taskId&amp;printMode=1">$tr.tr("print_mode")</a></div>
+    <div class="saveTaskLink"><a class="saveTaskLink" href="$req.basePath/admin/taskfile?ids=$taskId">$tr.tr("save_task")</a></div>
+    <div class="testTaskLink"><a class="testTaskLink" href="$req.basePath/student/task?id=$taskId">$tr.tr("test_task")</a></div>
+
+    <button type="button" id="permitDangerousModifications">$tr.tr('permit_dangerous_modification')</button>
+    #if ($numAnswers > 0)
+        <p class="existingAnswerWarning initiallyHidden">
+            #if ($numAnswers == 1)
+                $tr.trp("there_is_one_answer_that_will_be_invalidated")
+            #else
+                $tr.trp("there_are_%d_answers_that_will_be_invalidated", $numAnswers)
+            #end
+        </p>
+    #end
+#end
+
+#if ($newTask)
+    #set($action="$req.basePath/admin/createtask")
+#else
+    #set($action="$req.basePath/admin/updatetask?id=$taskId")
+#end
+
+<form id="taskForm" method="post" action="$action" accept-charset="UTF-8">
+    
+    #if (!$newTask)
+        <input type="hidden" name="safeUpdate" id="safeUpdate" value="1" />
+    #end
+    
+    #if (!$newTask)
+        <div class="formButtons">
+            <button type="submit">$tr.tr("save_button")</button>
+        </div>
+    #end
+    
+    <fieldset id="basicInfoFieldset">
+        <legend>$tr.tr("task_basic_info_title")</legend>
+        
+        #if ($newTask)
+            <input type="hidden" name="courseId" value="$course.id" />
+        #else
+            <input type="hidden" name="taskId" value="$taskId" />
+        #end
+        
+        <div id="hiddenFieldDiv" class="formField">
+            <label for="hiddenField">$tr.tr("fieldLabel_hidden")</label>
+            #if ($task.hidden)
+                #set($checked = $utils.noEscape('checked="checked"'))
+            #else
+                #set($checked = '')
+            #end
+            <input type="checkbox" id="hiddenField" name="hidden" value="1" $checked />
+        </div>
+        
+        <div class="formField">
+            <label for="categoryField">$tr.tr("fieldLabel_category")</label>
+            <select id="categoryField" name="categoryId">
+                <option value=""></option>
+                #foreach ($cat in $availableCategories)
+                    #if ($cat.getId() == $task.category.id)
+                        #set($selected = $utils.noEscape('selected="selected"'))
+                    #else
+                        #set($selected = '')
+                    #end
+                    <option value="$cat.id" $selected>$utils.maybe($cat.getName($tr.locale))</option>
+                #end
+            </select>
+        </div>
+        
+        <br />
+        
+        <div id="taskBasicFieldsPlaceholder"><!-- Replaced by JS. --></div>
+        
+        <div class="formField">
+            <label for="difficultyField">$tr.tr("fieldLabel_difficulty")</label>
+            <input type="text" id="difficultyField" name="difficulty" value="$task.difficulty" />
+        </div>
+        
+        <div class="formField">
+            <label for="maxStepsField">$tr.tr("fieldLabel_maxSteps")</label>
+            <input type="text" id="maxSteps" name="maxSteps" value="$task.maxSteps" />
+        </div>
+    </fieldset>
+
+    #foreach ($locale in $supportedLocales)
+        <div id="taskBasicFields_$locale" class="hidden">
+            #if ($completeTranslations.contains($locale))
+                <div class="hasCompleteTranslation">$tr.tr("has_complete_translation")</div>
+            #else
+                <div class="hasIncompleteTranslation warning">$tr.tr("has_incomplete_translation")</div>
+            #end
+            
+            #set($title = $utils.maybe($task.title.get($locale)))
+            #set($description = $utils.maybe($task.description.get($locale)))
+            <div class="formField">
+                <label for="titleField_$locale">$tr.tr("fieldLabel_title")</label>
+                <input type="text" id="titleField_$locale" name="title[$locale]" class="titleField" value="$utils.maybe($title)" />
+            </div>
+            
+            <div class="formField">
+                <label for="descriptionField_$locale">$tr.tr("fieldLabel_description")</label>
+                <textarea id="descriptionField_$locale" name="description[$locale]" class="descriptionField taskDesc" rows="30" cols="55">$utils.maybe($description)</textarea>
+            </div>
+        </div>
+    #end
+    
+    #* Why is this JS necessary? Might it be a remnant of something earlier? *#
+    <script type="text/javascript">
+    <!--
+    $(document).ready(function() {
+
+        #literal()
+        var TranslatedSlotSet = namespace('admin.translatedSlots').TranslatedSlotSet;
+        var slotSet = new TranslatedSlotSet(function(localeId) {
+            return $('#taskBasicFields_' + localeId).remove().removeClass('hidden');
+        });
+
+        $('#taskBasicFieldsPlaceholder').replaceWith(slotSet.ui);
+        #end
+    });
+    //-->
+    </script>
+    
+    <fieldset id="codeFieldset">
+        <legend>$tr.tr('task_code_info_title')</legend>
+        
+        <div class="formField">
+            <label for="typeField">$tr.tr("fieldLabel_type")</label>
+            <select id="typeField" name="type">
+                #foreach ($type in $TaskType.values())
+                    #if ($task.type == $type)
+                        #set($selected = $utils.noEscape('selected="selected"'))
+                    #else
+                        #set($selected = "")
+                    #end
+                    <option value="$type" $selected>$type.getName($tr.locale)</option>
+                #end
+            </select>
+        </div>
+        
+        #if ($task.type && $task.fillIn)
+            #set($hidden = "")
+        #else
+            #set($hidden = "hidden")
+        #end
+        <div class="formField fillInField $hidden">
+            <label for="preCodeField">$tr.tr("fieldLabel_preCode")</label>
+            <textarea id="preCodeField" name="preCode" rows="20" cols="80">$utils.maybe($task.preCode)</textarea>
+        </div>
+        
+        <div class="formField">
+            <label for="modelSolutionField">$tr.tr("fieldLabel_modelSolution")</label>
+            <textarea id="modelSolutionField" name="modelSolution" rows="30" cols="80">$utils.maybe($task.modelSolution)</textarea>
+        </div>
+        
+        <div class="formField fillInField $hidden">
+            <label for="postCodeField">$tr.tr("fieldLabel_postCode")</label>
+            <textarea id="postCodeField" name="postCode" rows="20" cols="80">$utils.maybe($task.postCode)</textarea>
+        </div>
+        
+    </fieldset>
+    
+    <script type="text/javascript">
+    <!--
+    $(document).ready(function() {
+        
+        // Handle showing/hiding of the fill-in fields preCode/postCode.
+        var fillInValue = 'FILL_IN';
+        
+        #literal()
+        function applyTaskType(type) {
+            if (type == fillInValue)
+                $('.fillInField').show('slow').attr('disabled', '');
+            else
+                $('.fillInField').hide('slow').attr('disabled', 'disabled');
+        }
+        
+        $('select#typeField').change(function() {
+            applyTaskType($(this).attr('value'));
+        });
+        applyTaskType($('select#typeField').attr('value'));
+        #end
+    });
+    // -->
+    </script>
+    
+    <div id="globalCriteriaPlaceholder"><!-- Replaced by JS. --></div>
+    
+    <div id="inputs"><!-- Filled in by JS. --></div>
+    
+    <div><button id="addInput" type="button">$tr.tr('add_input_button')</button></div>
+    
+    <script type="text/javascript">
+    <!--
+    $(document).ready(function() {
+        // Fill in inputs and their criteria, as well as the global criteria
+        
+        // Inputs:
+        var inputs = []; // All inputs. Note that the user might have deleted some.
+        var existingInputsById = {};
+        var input;
+        
+        #foreach ($input in $sortedInputs)
+            input = new admin.input.Input();
+            input.setInput('$input.getInput()');
+            input.setSecret($input.isSecret());
+            input.criterionSet.setTitle('$utils.noEscape($tr.tr("input_criteria_title"))');
+            inputs.push(input);
+            existingInputsById['$input.id'] = input;
+        #end
+
+        #foreach ($criterionType in $criterionTypeMap.values())
+            #foreach ($locale in $supportedLocales)
+                admin.criterion.setDefaultAcceptMessage($utils.quoteJavascript($criterionType.criterionClass.simpleName),
+                                                        $utils.quoteJavascript($locale),
+                                                        $utils.quoteJavascript($utils.maybe($criterionType.getDefaultAcceptMessage($locale))));
+                admin.criterion.setDefaultRejectMessage($utils.quoteJavascript($criterionType.criterionClass.simpleName),
+                                                        $utils.quoteJavascript($locale),
+                                                        $utils.quoteJavascript($utils.maybe($criterionType.getDefaultRejectMessage($locale))));
+            #end
+        #end
+
+        // Criteria:
+        #literal()
+        var globalCriteria = new admin.criterionSet.CriterionSet(null);
+        #end
+        
+        globalCriteria.setTitle('$utils.noEscape($tr.tr("global_criteria_title"))');
+        $(globalCriteria.ui).addClass('globalCriteria');
+
+        var criterionClass;
+        var initialParams;
+
+        #foreach ($criterion in $sortedCriteria)
+            #set($criterionType = $criterionTypeMap.get($criterion.getClass()))
+            try {
+                criterionClass = '$criterion.getClass().getSimpleName()';
+                initialParams = $utils.quoteJavascript($utils.maybe($criterion.parameters));
+                
+                #literal()
+                if (typeof(admin.criterion[criterionClass]) == 'function') {
+                    var criterion = new admin.criterion[criterionClass](initialParams);
+                    #end
+                    
+                    #if ($criterion.input)
+                        var input = existingInputsById['$criterion.input.id'];
+                        input.criterionSet.addCriterion(criterion, false);
+                        criterion.setInputId(input.id);
+                    #else
+                        globalCriteria.addCriterion(criterion, false);
+                    #end
+
+                    criterion.setQualityCriterion($criterion.isQualityCriterion());
+                    
+                    var locale;
+                    #foreach ($locale in $supportedLocales)
+                        locale = $utils.quoteJavascript($locale);
+                        criterion.setAcceptMessage(locale, $utils.quoteJavascript($utils.coalesce($criterion.getAcceptMessage($locale), $criterionType.getDefaultAcceptMessage($locale), "")));
+                        criterion.setRejectMessage(locale, $utils.quoteJavascript($utils.coalesce($criterion.getRejectMessage($locale), $criterionType.getDefaultRejectMessage($locale), "")));
+                    #end
+
+                    #if (!$criterion.parametersValid())
+                        criterion.showWarning();
+                    #end
+                    #literal()
+                    
+                } else {
+                    debug('Criterion class not found: ' + criterionClass);
+                }
+                #end
+            } catch (e) {
+                debug(e);
+                alert(e);
+            }
+        #end
+
+        #literal()
+        $('#globalCriteriaPlaceholder').replaceWith(globalCriteria.ui);
+        
+        for (var i = 0; i < inputs.length; ++i) {
+            $('#inputs').append(inputs[i].ui);
+        }
+        #end
+
+
+        // Handle the add input button
+        $('button#addInput').click(function() {
+            var input = new admin.input.Input();
+            input.criterionSet.setTitle('$utils.noEscape($tr.tr("input_criteria_title"))');
+            inputs.push(input);
+            $(input.ui).hide();
+            $('#inputs').append(input.ui);
+            $(input.ui).show('slow');
+            return false;
+        });
+    });
+    // -->
+    </script>
+
+    <div class="formButtons">
+        <button type="submit">$tr.tr("save_button")</button>
+    </div>
+</form>
+
+## Print mode must be applied last
+<script type="text/javascript">
+<!--
+#if ($printMode)
+    $(document).ready(function() {
+        // Remove instructions on how to fill in criterion fields.
+        $('.criterionCustomPart label').remove();
+
+        // Remove the navigation header
+        $('#navigation').remove();
+
+        // Set page title to task name only
+        $('h1').text($utils.quoteJavascript($taskName));
+
+        // Remove the parenthesized part from titles
+        $('label').each(function() {
+            $(this).text($(this).text().replace(/\([^\)]*\)/, ''));
+        }); 
+
+        // Do the generic printMode things
+        printMode.printMode($('form#taskForm')[0]);
+    });
+#else
+
+    ## Keep track of form modification so we can give an "unsaved changes" warning if necessary
+    $(document).ready(function() {
+        var form = $('#taskForm')[0];
+        var initialFormData = formUtils.snapshotFormData(form);
+
+        function confirmUnsavedChanges(msg) { return function() { // I'd like curry
+            if (formUtils.getChangedFields(form, initialFormData).length > 0)
+                return confirm(msg);
+            else
+                return true;
+        }}
+
+        #set($warning = $utils.quoteJavascript($tr.tr('unsaved_changes_warning')))
+        #set($warningForSave = $utils.quoteJavascript($tr.tr('unsaved_changes_warning_for_save')))
+        $('a.printModeLink').click(confirmUnsavedChanges($warning));
+        $('a.testTaskLink').click(confirmUnsavedChanges($warning));
+        $('a.saveTaskLink').click(confirmUnsavedChanges($warningForSave));
+    });
+#end
+//-->
+</script>
+
+#if (!$newTask)
+    #literal()
+    <script type="text/javascript">
+    <!--
+    $(document).ready(function() {
+        // Returns fields that require users' answers to be obsoleted before they can be modified.
+        function getDangerousFields() {
+            return $('fieldset#codeFieldset, fieldset.globalCriteria, fieldset.input').find(':input').add('button#addInput');
+        }
+    
+        getDangerousFields().attr('disabled', 'disabled');
+        $('a.loadDefault').hide();
+        
+        $('#permitDangerousModifications').click(function() {
+            $('input:hidden#safeUpdate').val('0');
+            getDangerousFields().attr('disabled', '');
+            $('a.loadDefault').show();
+            $(this).hide('slow', function() {
+                $('.existingAnswerWarning').show('slow');
+            });
+            return false;
+        });
+    });
+    //-->
+    </script>
+    #end
+#end
+
+#if (!$can.update($task))
+    <script type="text/javascript">
+    <!--
+    $(document).ready(function() {
+        formUtils.disableForm('#taskForm')
+        $('a.loadDefault').remove();
+        $('button#permitDangerousModifications').remove();
+    });
+    //-->
+    </script>
+#end
+

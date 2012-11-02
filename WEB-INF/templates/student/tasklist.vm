@@ -1,0 +1,59 @@
+
+<h1>$tr.tr("title")</h1>
+
+<table class="tasks">
+    <thead>
+        <tr>
+            <th>$tr.tr("header_name")</th>
+        	<th>$tr.tr("header_difficulty")</th>
+        	<th>$tr.tr("header_status")</th>
+            <th>$tr.tr("header_type")</th>
+            <th>$tr.tr("header_category")</th>
+        </tr>
+    </thead>
+    <tbody>
+    	#foreach($task in $tasks)
+            #if ($task.hasCompleteTranslation($tr.locale))
+        		<tr>
+                    <td><a href="$req.getBasePath()/student/task?id=$task.id">$task.getTitle($tr.locale)</a></td>
+        			<td>$task.difficulty</td>
+                    #set($answer = false)
+                    #set($answer = $taskAnswers.get($task.id))
+                    #if ($answer)
+                        #if ($answer.isSuccessful())
+                            <td class="accept">$tr.tr("task_solved")</td>
+                        #else
+                            #if ($answer.isObsoleted())
+                                <td class="obsoleted">$tr.tr("task_obsoleted")</td>
+                            #else
+                                <td class="unsolved">$tr.tr("task_unsolved")</td>
+                            #end
+                        #end
+                    #else
+                        <td class="unsolved">$tr.tr("task_unsolved")</td>
+                    #end
+                    <td>$task.type.getName($tr.locale)</td>
+                    <td>$utils.coalesce($task.category.getName($tr.locale), $tr.tr("uncategorized"))</td>
+                </tr>
+            #end
+    	#end
+    </tbody>
+</table>
+
+<script type="text/javascript">
+<!--
+#literal()
+    $('table.tasks').addClass('tablesorter').tablesorter({
+        sortList: [[0, 0]],
+        textExtraction: function(node) {
+        switch (node.className) {
+        case 'accept': return 'a';
+        case 'obsoleted': return 'b';
+        case 'unsolved': return 'c';
+        default: return $(node).text();
+        }
+    },
+    });
+#end
+//-->
+</script>

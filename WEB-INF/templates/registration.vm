@@ -1,0 +1,86 @@
+
+#set($user = $theUser)
+
+<form id="registrationForm" method="post" action="$req.basePath/doregistration" accept-charset="UTF-8">
+    <fieldset>
+    
+        <div class="formField">
+            <label for="usernameField">$tr.tr("userName")</label>
+            <input type="text" id="usernameField" name="username" value="$utils.maybe($user.username)" />
+        </div>
+        <div class="formField">
+            <label for="firstNameField">$tr.tr("firstName")</label>
+            <input type="text" id="firstNameField" name="firstName" value="$utils.maybe($user.firstName)" />
+        </div>
+        <div class="formField">
+            <label for="lastNameField">$tr.tr("lastName")</label>
+            <input type="text" id="lastNameField" name="lastName" value="$utils.maybe($user.lastName)" />
+        </div>
+        <div class="formField">
+            <label for="emailField">$tr.tr("e-mail")</label>
+            <input type="text" id="emailField" name="email" value="$utils.maybe($user.email)" />
+        </div>
+        <div class="formField">
+            <label for="studentNumberField">$tr.tr("studentNumber")</label>
+            <input type="text" id="studentNumberField" name="studentNumber" value="$utils.maybe($user.studentNumber)" />
+        </div>
+        
+        <div class="formField">
+            <label for="prefLocale">$tr.tr("prefLocale")</label>
+            <select id="prefLocale" name="prefLocale">
+                #foreach ($locale in $availableLocales)
+                    #if ($locale.equals($tr.locale))
+                        #set($selected = $utils.noEscape('selected="selected"'))
+                    #else
+                        #set($selected = '')
+                    #end
+                    <option value="$locale" $selected>$locale.getDisplayLanguage($tr.locale)</option>
+                #end
+            </select>
+        </div>
+        
+        <br />
+        
+        <div class="formField">
+            <label for="course">$tr.tr("course")</label>
+            <select id="course" name="courseId">
+                <option value=""></option>
+                #foreach ($course in $availableCourses)
+                    #if ($user.courseId && $user.courseId.equals($course.id))
+                        #set($selected = $utils.noEscape('selected="selected"'))
+                    #else
+                        #set($selected = '')
+                    #end
+                    <option value="$course.id" $selected>$course.getName($tr.locale)</option>
+                #end
+            </select>
+        </div>
+        
+        <div class="formField">
+            <label for="passwd">$tr.tr("passwd")</label>
+            <input type="password" id="passwd" name="passwd" />
+        </div>
+        <div class="formField">
+            <label for="passwdAgain">$tr.tr("passwdAgain")</label>
+            <input type="password" id="passwdAgain" name="passwd2" />
+        </div>
+        
+        <button type="submit">$tr.tr("create_button")</button>    
+        
+    </fieldset>
+</form>
+
+#if ($invFields && !$invFields.isEmpty())
+    <script type="text/javascript">
+    <!--
+    #literal()
+    $(document).ready(function() {
+        #end
+        var fields = ['$utils.join($invFields, "','")'];
+        #literal()
+        formUtils.highlightInvalidFields($('#registrationForm')[0], fields);
+    });
+    #end
+    //-->
+    </script>
+#end

@@ -1,0 +1,110 @@
+
+#* For convenience, make $user refer here to the user we're talking about
+   instead of the currently logged in user. *#
+#set($user = $theUser)
+
+<h1>$tr.trp("stats")</h1>
+
+#set($fullName = $utils.coalesce($user.lastName, "?") + ", " + $utils.coalesce($user.firstName, "?"))
+
+<div><span class="label">$tr.tr('course'):</span> <a href="$req.basePath/admin/statsbyuser?courseId=$course.id">$utils.coalesce($course.name.getByPreference(true, $tr.locale), "-")</a></div>
+<div><span class="label">$tr.tr('username'):</span> $user.username</div>
+<div><span class="label">$tr.tr('name'):</span> $fullName</div>
+<div><span class="label">$tr.tr('student_number'):</span> $utils.coalesce($user.studentNumber, "?")</div>
+
+#set($solvedPercent = (100 * $tasksSolved) / $totalTasks)
+#set($attemptedPercent = (100 * $tasksAttempted) / $totalTasks)
+
+<div><span class="label">$tr.tr('tasks_solved'):</span> $tasksSolved / $totalTasks ($solvedPercent%)</div>
+<div><span class="label">$tr.tr('tasks_attempted'):</span> $tasksAttempted / $totalTasks ($attemptedPercent%)</div>
+
+<br />
+<br />
+
+#if (!$tasks.empty)
+    <table id="tasks">
+        <thead>
+            <tr>
+                <th>$tr.tr("task")</th>
+                <th>$tr.tr("status")</th>
+            </tr>
+        </thead>
+        <tbody>
+            #set($someLackedQuality = false)
+            #foreach ($task in $tasks)
+                #set($answer = $utils.coalesce($taskAnswers.get($task.id), false))
+                <tr>
+                    <td class="taskTitle">
+                        #set($taskName = $utils.coalesce($task.title.getByPreference(true, $tr.locale), "-"))
+                        #if ($answer)
+                            <a href="" class="showAnswer">$taskName</a>
+                        #else
+                            $taskName
+                        #end
+                    </td>
+                    #if ($answer)
+                        #if ($answer.isSuccessful())
+                            #if (!$answer.hasFailedQualityCriterion())
+                                <td class="accept">$tr.tr("accepted")</td>
+                            #else
+                                #set($someLackedQuality = true)
+                                <td class="lacksQuality">$tr.tr("lacks_quality")</td>
+                            #end
+                        #else
+                            #if ($answer.isObsoleted())
+                                <td class="obsoleted">$tr.tr("obsoleted")</td>
+                            #else
+                                <td class="reject">$tr.tr("rejected")</td>
+                            #end
+                        #end
+                    #else
+                        <td class="noAnswer">$tr.tr("no_answer")</td>
+                    #end
+                </tr>
+                #if ($answer)
+                    <tr class="secondary answerDetails initiallyHidden">
+                        <td colspan="2">
+                            <a class="function" href="$req.basePath/admin/task?id=$task.id">$tr.tr('go_to_task')</a>
+                            <pre class="preCode code">$utils.maybe($task.preCode)</pre>
+                            <pre class="code">$answer.code</pre>
+                            <pre class="postCode code">$utils.maybe($task.postCode)</pre>
+                        </td>
+                    </tr>
+                #end
+            #end
+        </tbody>
+    </table>
+    #if ($someLackedQuality)
+        <div class="footnote">$tr.tr("some_answers_lacked_quality")</div>
+    #end
+#end
+
+<script type="text/javascript">
+<!--
+#literal()
+$(document).ready(function() {
+    // Tablesorter
+    $('table#tasks').addClass('tablesorter').tablesorter({
+        sortList: [[1, 0], [0, 0]],
+        textExtraction: function(node) {
+            switch (node.className) {
+            case 'accept': return 'a';
+            case 'obsoleted': return 'b';
+            case 'lacksQuality': return 'c';
+            case 'reject': return 'd';
+            case 'noAnswer': return 'e';
+            default: return $(node).text();
+            }
+        },
+        widgets: ['secondaryRows']
+    });
+
+    // Show answer links
+    $('a.showAnswer').click(function() {
+        $(this).closest('tr').next('tr.answerDetails').toggle();
+        return false;
+    });
+});
+#end
+//-->
+</script>

@@ -1,0 +1,72 @@
+=== Installation instructions ===
+
+1. Make sure you have a recent JDK version 6 or later installed.
+You also need a fairly recent Apache Ant installation to build the source.
+PostgreSQL 8.2 or later is the only supported (=tested) database
+engine at the moment.
+
+2. Install Tomcat 6 and make sure you have access to the online application manager.
+
+3. Extract the TitoTrainer2 source code to where you want
+to store the application. We will set up Tomcat to use the application
+from an external directory.
+
+4. Copy build.properties.example to build.properties and edit the new
+build.properties to have the correct path to your Tomcat installation.
+The other parameters needn't be touched.
+
+5. We assume you have PostgreSQL 8.2 or later set up.
+The application requires a database and needs to access the database
+as the the database owner via a network socket.
+It is recommended the database be created with the UTF-8 encoding.
+
+Example commands for creating a database and database user:
+createuser -P someusername
+createdb -O someusername -E UTF-8 somedbname
+
+6. Copy WEB-INF/conf/default/db.properties to WEB-INF/conf/db.properties,
+open the new copy and write your database connection URL, username and
+password there.
+
+7. Build the application by running ant build build-tools
+in the source directory.
+
+8. Initialize the database by running
+ant Database.CreateSchema in the source directory.
+If this fails, there is probably something wrong with your database setup
+or connection parameters.
+
+9. Create an administrator user account.
+
+Option 1:
+The following creates a user "admin" with the password "admin".
+INSERT INTO "user" (id, parentrole, username, passwordsha1)
+VALUES (nextval('hibernate_sequence'), '@ADMINISTRATOR', 'admin', '58aeda41c84041e38a15bffad6684d033bef6684');
+
+Option 2:
+Running ant Database.InsertTestdata creates
+a user "admin" with the password "admin" and also adds some example data into
+the database.
+
+10. Navigate to Tomcat's conf directory.
+Inside it, create the subdirectory Catalina and inside that, localhost.
+Inside localhost create the file titotrainer2.xml with contents like the
+following:
+<Context path="/titotrainer2"
+reloadable="true"
+docBase="/path/to/titotrainer2-directory"
+workDir="/path/to/titotrainer2-directory/work" />
+
+11. Restart Tomcat, go to Tomcat's application manager and
+start the application. The application should now be available at the path
+you configured in the previous step.
+Check Tomcat's log files if you have problems.
+
+== Notes ==
+* Tomcat Security Manager
+  We did not have enough time to properly document the Java security
+  permissions required by our application.
+  Please disable Tomcat's security manager if it causes problems.
+
+* It is a known bug that non-ASCII characters might not work properly on servers
+  with a locale other than UTF-8.

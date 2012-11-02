@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="$tr.locale.language" lang="$tr.locale.language">
+<head>
+    <title>TitoTrainer</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
+    <link type="text/css" rel="stylesheet" href="$req.basePath/public/global.css" />
+    #if ($module)
+        <link type="text/css" rel="stylesheet" href="$req.basePath/public/${module}.css" />
+    #end
+    <script type="text/javascript" charset="utf-8" src="$req.basePath/params.js"></script>
+    <script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/lib/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/lib/jquery-ui-personalized-1.6rc2.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/lib/jquery.tablesorter.min.js"></script>
+    <script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/utils.js"></script>
+    <script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/common.js"></script>
+    <script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/formUtils.js"></script>
+    <script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/printMode.js"></script>
+    #* TODO: maybe make it possible for views to specify load optional JS files only when needed. Caching static files should alleviate this issue, though. *#
+    #if ($module)
+        #parse("$module/header-scripts.vm")
+    #end
+</head>
+<body>
+    <div id="navigation">
+        <div class="apptitle">
+            TitoTrainer2
+        </div>
+        
+        #if ($module)
+            #parse("$module/header-navigation.vm")
+        #end
+        
+        #if ($user)
+            #if ($user.inheritsRole($TitoBaseRole.getRoleByName('@ADMINISTRATIVE')))
+                #if ($module == 'admin')
+                    <a class="moduleSwitchLink" href="$req.basePath/student">$tr.tr("student_module_link")</a>
+                #else
+                    <a class="moduleSwitchLink" href="$req.basePath/admin">$tr.tr("admin_module_link")</a>
+                #end
+            #end
+            <div class="logoutLink">
+                <a id="logoutLink" class="function" href="$req.basePath/dologout">$tr.tr("log_out_button")</a>
+            </div>
+        #end
+    </div>
+    
+    <div id="main">
+        <div id="globalMessages">
+            #foreach($category in ["error", "warning", "status", "success"])
+                #set($messages = $messenger.consumeMessages("global.$category"))
+                #if (!$messages.empty)
+                    <div id="global${category}" class="globalMessageCategory">
+                        #foreach($msg in $messages)
+                            <div class="$category">$msg</div>
+                        #end
+                    </div>
+                #end
+            #end
+        </div>
+        
+        <div id="mainContent">

@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head profile="http://selenium-ide.openqa.org/profiles/test-case">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="selenium.base" href="" />
+<title>PersonalInfoTest</title>
+</head>
+<body>
+<table cellpadding="1" cellspacing="1" border="1">
+<thead>
+<tr><td rowspan="1" colspan="3">PersonalInfoTest</td></tr>
+</thead><tbody>
+<tr>
+	<td>open</td>
+	<td>student/login</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>usernameField</td>
+	<td>student</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>passwordField</td>
+	<td>student</td>
+</tr>
+<tr>
+	<td>click</td>
+	<td>//button[@type='submit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>open</td>
+	<td>student/personalinfo</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>firstnameField</td>
+	<td>salmon</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@type='submit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Muutokset tallennettu</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>firstnameField</td>
+	<td>salmon</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>lastnameField</td>
+	<td>snake</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@type='submit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Muutokset tallennettu</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>lastnameField</td>
+	<td>snake</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>emailField</td>
+	<td>s.snake@email.com</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@type='submit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Muutokset tallennettu</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyValue</td>
+	<td>emailField</td>
+	<td>s.snake@email.com</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>passwd</td>
+	<td>password</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@type='submit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Salasanat eivät täsmää</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>passwd2</td>
+	<td>password</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@type='submit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Salasanat eivät täsmää</td>
+	<td></td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>passwd</td>
+	<td>student</td>
+</tr>
+<tr>
+	<td>type</td>
+	<td>passwd2</td>
+	<td>student</td>
+</tr>
+<tr>
+	<td>clickAndWait</td>
+	<td>//button[@type='submit']</td>
+	<td></td>
+</tr>
+<tr>
+	<td>verifyTextPresent</td>
+	<td>Salasana muutettu</td>
+	<td></td>
+</tr>
+
+</tbody></table>
+</body>
+</html>

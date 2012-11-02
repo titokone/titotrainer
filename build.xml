@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project basedir="." default="build" name="nexttito">
+	
+    <property environment="env"/>
+    <property file="build.properties" />
+    <property name="junit.output.dir" value="junit"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    
+    <available file="${TOMCAT_HOME}" property="tomcat_found" />
+    <fail unless="tomcat_found"
+          message="Tomcat directory not found. Please set it in build.properties."/>
+
+    <path id="nexttito.classpath">
+        <pathelement location="${TOMCAT_HOME}/lib/servlet-api.jar"/>
+        <pathelement location="${TOMCAT_HOME}/lib/jasper.jar"/>
+        <pathelement location="${TOMCAT_HOME}/lib/jsp-api.jar"/>
+        <pathelement location="${TOMCAT_HOME}/lib/el-api.jar"/>
+        <pathelement location="${TOMCAT_HOME}/lib/annotations-api.jar"/>
+        <pathelement location="WEB-INF/classes"/>
+        <pathelement location="${TOMCAT_HOME}"/>
+        <pathelement location="WEB-INF/lib/antlr-2.7.6.jar"/>
+        <pathelement location="WEB-INF/lib/commons-collections-3.2.1.jar"/>
+        <pathelement location="WEB-INF/lib/commons-io-1.4.jar"/>
+        <pathelement location="WEB-INF/lib/commons-lang-2.4.jar"/>
+        <pathelement location="WEB-INF/lib/dom4j-1.6.1.jar"/>
+        <pathelement location="WEB-INF/lib/hibernate3.jar"/>
+        <pathelement location="WEB-INF/lib/jakarta-oro-2.0.8.jar"/>
+        <pathelement location="WEB-INF/lib/javassist-3.4.GA.jar"/>
+        <pathelement location="WEB-INF/lib/jta-1.1.jar"/>
+        <pathelement location="WEB-INF/lib/slf4j-api-1.5.3.jar"/>
+        <pathelement location="WEB-INF/lib/slf4j-nop-1.5.3.jar"/>
+        <pathelement location="WEB-INF/lib/velocity-1.6.1.jar"/>
+        <pathelement location="WEB-INF/lib/hsqldb.jar"/>
+        <pathelement location="WEB-INF/lib/postgresql-8.2-508.jdbc4.jar"/>
+        <pathelement location="WEB-INF/lib/ejb3-persistence.jar"/>
+        <pathelement location="WEB-INF/lib/hibernate-commons-annotations.jar"/>
+        <pathelement location="WEB-INF/lib/hibernate-annotations.jar"/>
+        <pathelement location="WEB-INF/lib/hibernate-validator.jar"/>
+        <pathelement location="WEB-INF/lib/hamcrest-core-1.1.jar"/>
+        <pathelement location="WEB-INF/lib/hamcrest-library-1.1.jar"/>
+    	<pathelement location="WEB-INF/lib/log4j-1.2.15.jar"/>
+    	<pathelement location="WEB-INF/lib/titokone-1.203.jar"/>
+        <pathelement location="WEB-INF/lib/commons-fileupload-1.2.1.jar"/>
+    	<pathelement location="WEB-INF/lib/mailapi.jar"/>
+    	<pathelement location="WEB-INF/lib/smtp.jar"/>
+    </path>
+    <path id="nexttito.test.classpath">
+        <path refid="nexttito.classpath"/>
+        <pathelement location="WEB-INF/lib/junit-4.6.jar"/>
+        <pathelement location="WEB-INF/lib/mockito-all-1.5.jar"/>
+        <pathelement location="tests/classes"/>
+    </path>
+    <path id="nexttito.cli.classpath">
+        <path refid="nexttito.classpath"/>
+        <pathelement location="tools/classes"/>
+        <pathelement location="WEB-INF/lib/cli/xercesImpl.jar"/>
+    </path>
+	
+	<!-- ========== -->
+	<!-- PROPERTIES -->
+	<!-- ========== -->
+	
+	<!-- PATHS -->
+	
+	<property name = "Path.JavaDoc"   location = "./javadoc"                     />
+    <property name = "Path.Libraries" location = "./lib"                         />
+	<property name = "Path.Source"    location = "./WEB-INF/src"                 />
+	<property name = "Path.JavaDoc.Style" location = "./dev/javadoc/nexttito.css" />
+
+	<!-- ========= -->
+    <!-- SHORTCUTS -->
+	<!-- ========= -->
+	
+	<target depends     = "Documentation.JavaDoc"
+	        description = "Shortcut for target 'Documentation.JavaDoc'"
+	        name        = "javadoc"
+	/>
+	
+	<target depends     = "Database.CreateTestDatabase"
+	        description = "Shortcut for target 'Database.CreateTestDatabase'"
+	        name        = "testdb"
+	/>
+	
+	<!-- ================ -->
+	<!-- DATABASE TARGETS -->
+	<!-- ================ -->
+	
+    <target depends     = "build-tools"
+            description = "Creates the tables according to the schema"
+            name        = "Database.CreateSchema"
+    >
+        <echo>Creating new database schema</echo>
+        <java classname    = "fi.helsinki.cs.titotrainer.app.tools.SchemaTool"
+              classpathref = "nexttito.cli.classpath"
+        >
+            <arg value = "exec"   />
+            <arg value = "create" />
+        </java>
+    </target>
+
+    <target depends     = "Database.DropSchema,Database.CreateSchema,Database.InsertTestdata"
+            description = "Creates a database filled with data for testing"
+    	    name        = "Database.CreateTestDatabase"
+	/>
+	
+	<target depends     = "build-tools"
+	        description = "Drops the existing database schema"
+	        name        = "Database.DropSchema"
+	>
+		<echo>Drop existing schema!</echo>
+		<java classname    = "fi.helsinki.cs.titotrainer.app.tools.SchemaTool"
+              classpathref = "nexttito.cli.classpath"
+        >
+            <arg value = "exec"   />
+            <arg value = "drop" />
+		</java>
+	</target>
+	
+	<target depends     = "build-tools"
+	        description = "Inserts test-data into the database"
+	        name        = "Database.InsertTestdata"
+	>
+        <java classname    = "fi.helsinki.cs.titotrainer.app.tools.InsertTestDbData"
+        	  classpathref = "nexttito.cli.classpath"
+        />
+	</target>
+	
+	<!-- ===================== -->
+    <!-- DOCUMENTATION TARGETS -->
+	<!-- ===================== -->
+	
+	<target description = "Creates the JavaDoc Documentation"
+	        name        = "Documentation.JavaDoc"
+	>
+	   <mkdir dir="${Path.JavaDoc}" />
+	   <javadoc destdir        = "${Path.JavaDoc}"
+	   	        sourcepath     = "${Path.Source}"
+                stylesheetfile = "${Path.JavaDoc.Style}"
+	   >
+	       <classpath refid="nexttito.classpath" />
+           <doctitle>TitoTrainer 2</doctitle>
+           <link href = "http://java.sun.com/javase/6/docs/api/" offline = "false" />
+       </javadoc>
+    </target>
+    
+    
+	
+    <target name="init">
+        <mkdir dir="WEB-INF/classes"/>
+        <mkdir dir="tests/classes"/>
+        <mkdir dir="tools/classes"/>
+        <copy includeemptydirs="false" todir="WEB-INF/classes">
+            <fileset dir="WEB-INF/src" excludes="**/*.launch, **/*.java"/>
+        </copy>
+        <copy includeemptydirs="false" todir="work">
+            <fileset dir="work" excludes="**/*.launch, **/*.java"/>
+        </copy>
+        <copy includeemptydirs="false" todir="tests/classes">
+            <fileset dir="tests/src" excludes="**/*.launch, **/*.java"/>
+        </copy>
+    	<copy includeemptydirs="false" todir="tests/classes">
+            <fileset dir="tests/supportsrc" excludes="**/*.launch, **/*.java"/>
+        </copy>
+        <copy includeemptydirs="false" todir="tools/classes">
+            <fileset dir="tools/src" excludes="**/*.launch, **/*.java"/>
+        </copy>
+    	
+    	<!-- Print the classpath into classpath.txt for the convenience of some CLI scripts -->
+    	<property name="nexttito.cli.classpath" refid="nexttito.cli.classpath" />
+    	<echo file="classpath.txt" message="${nexttito.cli.classpath}" />
+    </target>
+    
+    <target name="clean" description="Clean all built files">
+        <delete dir="WEB-INF/classes"/>
+        <delete dir="tests/classes"/>
+        <delete dir="tools/classes"/>
+        <delete dir="junit"/>
+        <delete dir="${Path.JavaDoc}"/>
+    </target>
+    
+    <target depends="init" name="build" description="Build the project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="WEB-INF/classes" source="${source}" target="${target}">
+            <src path="WEB-INF/src"/>
+            <classpath refid="nexttito.classpath"/>
+        </javac>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="work" source="${source}" target="${target}">
+            <src path="work"/>
+            <classpath refid="nexttito.classpath"/>
+        </javac>
+    </target>
+    
+    <target depends="build" name="build-tests" description="Build all unit tests">
+        <javac debug="true" debuglevel="${debuglevel}" destdir="tests/classes" source="${source}" target="${target}">
+            <src path="tests/src"/>
+            <src path="tests/supportsrc"/>
+            <classpath refid="nexttito.test.classpath"/>
+        </javac>
+    </target>
+    
+    <target depends="build" name="build-tools" description="Build all CLI tools">
+        <javac debug="true" debuglevel="${debuglevel}" destdir="tools/classes" source="${source}" target="${target}">
+            <src path="tools/src"/>
+            <classpath refid="nexttito.cli.classpath"/>
+        </javac>
+    </target>
+    
+    <target name="test" depends="build-tests" description="Run all unit tests">
+        <mkdir dir="${junit.output.dir}"/>
+        
+        <junit fork="yes" printsummary="yes">
+            <formatter type="xml"/>
+            <jvmarg line="-ea"/>
+            <classpath refid="nexttito.test.classpath" />
+            <batchtest todir="${junit.output.dir}">
+                <fileset dir="tests/src" />
+            </batchtest>
+        </junit>
+    </target>
+    
+    <target name="testreport" depends="test" description="Make a jUnit report">
+        <junitreport todir="${junit.output.dir}">
+            <fileset dir="${junit.output.dir}">
+                <include name="TEST-*.xml"/>
+            </fileset>
+            <report format="frames" todir="${junit.output.dir}"/>
+        </junitreport>
+    </target>
+	
+</project>
+<!-- =========== -->
+<!-- END OF FILE -->
+<!-- =========== -->

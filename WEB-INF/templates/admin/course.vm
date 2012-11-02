@@ -1,0 +1,123 @@
+
+<script type="text/javascript">
+<!--
+#literal()
+$(document).ready(function() {
+    // Make the category list sortable
+    $('table#categoryList').addClass('tablesorter').tablesorter({
+        sortList: [[0, 0]],
+        headers: {
+            1: { // Disable sorting for the column with the links
+                sorter: false
+            }
+        }
+    });
+    
+    // Add a confirmation to the category delete button
+    $('a.deleteCategory').click(function() {
+        #end
+        var confirmFmt = $utils.quoteJavascript($tr.tr("category_list_category_%s_delete_confirmation"));
+        #literal()
+        var parentRow = $(this).parents('tr')[0];
+        var categoryTitle = $(parentRow).find('.categoryTitle').text();
+        return confirm(confirmFmt.replace(/\%s/, categoryTitle));
+    });
+    
+});
+#end
+-->
+</script>
+
+#if ($newCourse)
+    <h1>$tr.tr("new_course")</h1>
+#else
+    <h1>$utils.coalesce($course.name.getByPreference(true, $tr.locale), $tr.tr("unnamed_course_title"))</h1>
+#end
+
+#if (!$newCourse)
+    <div class="statsLink"><a class="statsLink" href="$req.basePath/admin/statsbyuser?courseId=$course.id">$tr.tr("stats_link")</a></div>
+#end
+
+#if ($newCourse)
+    #set($action = "$req.basePath/admin/createcourse")
+#else
+    #set($action = "$req.basePath/admin/updatecourse")
+#end
+
+<form id="courseForm" action="$action" method="post" accept-charset="utf-8">
+    <fieldset>
+        <legend>$tr.tr("course_attributes_title")</legend>
+        
+        <input type="hidden" name="id" value="$course.id" />
+        
+        <table>
+            <tr>
+                #foreach ($locale in $supportedLocales)
+                    <td>
+                        <div><span class="label">$tr.tr("language"):</span> $locale.getDisplayName($tr.locale)</div>
+                        <div class="formField">
+                            <label for="courseName_$locale">$tr.tr("course_name")</label>
+                            <input id="courseName_$locale" name="courseName[$locale]" value="$utils.maybe($course.getName($locale))" />
+                        </div>
+                    </td>
+                #end
+            </tr>
+        </table>
+        <div class="formField">
+            <label for="hidden">Piilotettu</label>
+            <input id="hidden" name="hidden" type="checkbox" #if($course.hidden)checked="checked"#end />
+        </div>
+        <br />
+        <button type="submit">$tr.tr("save")</button>
+    </fieldset>
+</form>
+
+#if (!$can.update($course))
+    $utils.disableForm('#courseForm')
+#end
+
+#if (!$newCourse)
+    <h2 id="categoryListTitle">$tr.tr("category_list_title")</h2>
+    
+    #if (!$course.categories.empty)
+        <table id="categoryList">
+            <thead>
+                <tr>
+                    <th>$tr.tr("category_list_header_name")</th>
+                    #if ($can.deleteAny("Category"))
+                        <th><!-- links --></th>
+                    #end
+                </tr>
+            </thead>
+            <tbody>
+                #foreach ($cat in $course.categories)
+                    <tr>
+                        <td><a class="categoryTitle" href="$req.basePath/admin/category?id=$cat.id">$utils.coalesce($cat.name.getByPreference(true, $tr.locale), $tr.tr("unnamed_category_title"))</a></td>
+                        #if ($can.deleteAny("Category"))
+                            <td>
+                                <a class="function dangerous deleteCategory" href="$req.basePath/admin/deletecategory?id=$cat.id">$tr.tr("category_list_delete")</a>
+                            </td>
+                        #end
+                    </tr>
+                #end
+            </tbody>
+        </table>
+    #else
+        $tr.tr("no_categories_found")
+    #end
+    
+    #if ($can.createAny("Category"))
+        <div class="function"><a class="function" href="$req.basePath/admin/category?courseId=$course.id">$tr.tr('new_category')</a></div>
+    #end
+    
+    
+    <h2 id="taskListTitle">$tr.tr("task_list_title")</h2>
+    
+    $utils.noEscape($taskListFragment)
+    
+    #if ($can.createAny("Task"))
+        <div class="function"><a class="function" href="$req.basePath/admin/task?courseId=$course.id">$tr.tr('new_task')</a></div>
+        
+        <div class="function"><a class="function" href="$req.basePath/admin/loadtasks?courseId=$course.id">$tr.tr('load_tasks')</a></div>
+    #end
+#end

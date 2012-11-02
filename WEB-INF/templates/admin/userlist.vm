@@ -1,0 +1,89 @@
+
+<h1>$tr.tr("title")</h1>
+
+<script type="text/javascript">
+<!--
+#literal()
+$(document).ready(function() {
+    $('table#userList').addClass('tablesorter').tablesorter({
+        sortList: [[0, 0]],
+        headers: {
+            5: { // Disable sorting for the column with the links
+                sorter: false
+            }
+        }
+    });
+
+    $('a.deleteUser').click(function() {
+        #end
+        var confirmFmt = $utils.quoteJavascript($tr.tr("delete_confirmation_%s"));
+        #literal()
+        var parentRow = $(this).parents('tr')[0];
+        var username = $(parentRow).find('.username').text();
+        return confirm(confirmFmt.replace(/\%s/, username));
+    });
+});
+#end
+-->
+</script>
+
+<form class="listQueryForm" action="$req.fullPath" method="get" accept-charset="UTF-8">
+    <div>
+        <div class="formField">
+            <label for="courseSelect">$tr.tr("label_course")</label>
+            <select id="courseSelect" name="courseId">
+                <option value="">$tr.tr("any_course")</option>
+                #foreach ($course in $courses)
+                    #if ($course == $selectedCourse)
+                        #set($selected = $utils.noEscape('selected="selected"'))
+                    #else
+                        #set($selected = '')
+                    #end
+                    <option value="$course.id" $selected>$utils.coalesce($course.name.getByPreference(true, $tr.locale), $tr.tr("unnamed_course"))</option>
+                #end
+            </select>
+        </div>
+        <button type="submit">$tr.tr("button_filter")</button>
+    </div>
+</form>
+
+<br />
+<br />
+
+#if (!$users.empty)
+    <table id="userList">
+        <thead>
+            <tr>
+                <th>$tr.tr("header_username")</th>
+                <th>$tr.tr("header_firstname")</th>
+                <th>$tr.tr("header_lastname")</th>
+                <th>$tr.tr("header_course")</th>
+                <th>$tr.tr("header_role")</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #foreach ($user in $users)
+                #set($course = $courseById.get($user.getCourseId()))
+                <tr>
+                    <td class="username"><a href="$req.basePath/admin/user?id=$user.id">$user.username</a></td>
+                    <td>$utils.maybe($user.firstName)</td>
+                    <td>$utils.maybe($user.lastName)</td>
+                    <td>
+                        #if ($course)
+                            <a href="$req.basePath/admin/course?id=$course.id">$utils.coalesce($course.name.getByPreference(true, $tr.locale), $tr.tr("unnamed_course"))</a>
+                        #end
+                    </td>
+                    <td>$user.parentRole.getName($tr.locale)</td>
+                    <td>
+                        <a class="deleteUser function dangerous" href="$req.basePath/admin/deleteuser?id=$user.id">$tr.tr("delete")</a>
+                    </td>
+                </tr>
+            #end
+        </tbody>
+    </table>
+#else
+    $tr.tr("no_users_found")
+#end
+
+<div class="function"><a class="function" href="$req.basePath/admin/user">$tr.tr("create_new_user")</a></div>

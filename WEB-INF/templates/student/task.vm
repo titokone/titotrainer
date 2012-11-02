@@ -1,0 +1,196 @@
+<h1>$utils.maybe($task.getTitle($tr.locale)) <span class="taskDifficulty">($task.difficulty)</span></h1>
+
+#if ($latestAnswer && $latestAnswer.isSuccessful())
+    <p>
+        <span class="accept">$tr.tr("task_solved")</span>
+    </p>
+#end
+
+#if ($user.inheritsRole($TitoBaseRole.getRoleByName('@ADMINISTRATIVE')))
+    <div><a href="$req.basePath/admin/task?id=$task.id">$tr.tr('task_admin')</a></div>
+    #if ($task.hidden)
+        <div class="notice">$tr.tr('admin_note_task_is_hidden')</div>
+    #end
+#end
+
+<form id="taskForm" action="$req.basePath/student/executeprogram" method="post" accept-charset="UTF-8">
+    <table>
+        <tr>
+            <td class="taskFormInputPart">
+                <div>
+                    <input type="hidden" name="taskId" value="$task.id" />
+                    <table>
+                        <thead>
+                            <tr><th>$tr.tr("header_instructions")</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="taskDesc">$utils.renderUserFormatedText($utils.maybe($task.getDescription($tr.locale)))</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <table>
+                        <thead>
+                            <tr><th colspan="2">$tr.tr("header_input")</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <label for="taskInput">$tr.tr("keyboard")</label>
+                                    #if ($customInput)
+                                        #set($input = $utils.join($customInput, ", "))
+                                    #else
+                                        #set($input = "")
+                                    #end
+                                    <input type="text" name="userInput" id="taskInput" value="$input" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                
+                    <table id="taskCode">
+                        <thead>
+                            <tr><th>$tr.tr("header_programcode")</th></tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td>
+                                    #if($task.type.toString() == "FILL_IN")<pre class="code precode">$utils.maybe($task.getPreCode())</pre>#end
+                                    <textarea rows="45" cols="60" id="studentCodeTextArea" name="code">#if($latestAnswer)$latestAnswer.code#end</textarea>
+                                    #if($task.type.toString() == "FILL_IN")<pre class="code postcode">$utils.maybe($task.getPostCode())</pre>#end
+                                </td>
+                            </tr>
+                    
+                            <tr>
+                                <td>
+                                    <a href="http://www.cs.helsinki.fi/group/titokone/">$tr.tr("ttk-91_reference")</a>
+                                    <button type="submit" id="taskSubmitButton">$tr.tr("submit")</button>
+                                </td>
+                    
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </td>
+            <td class="taskFormResultPart">
+                #if ($customInputWasTried)
+                    #set($input = $customInput)
+                    #set($satisfiedCriteria = $customInputSatisfiedCriteria)
+                    #set($titokoneState = $customInputTitokoneState)
+                    <div class="taskResults">
+                        <h2>$tr.tr("title_custom_input")</h2>
+                        #if (!$utils.isEmpty($input))
+                            <div class="titokoneInput">$tr.tr("input"): "<span class="titokoneInput">$utils.maybe($utils.join($input, ", "))</span>"</div>
+                        #else
+                            <div class="titokoneInput">$tr.tr("input"): &mdash;</div>
+                        #end
+                        
+                        #if ($titokoneState)
+                            #if (!$customInputModelSolutionState || $customInputModelSolutionState.exitStatus.toString() == "SUCCESSFUL")
+                        
+                                <div class="titokoneOutput">$tr.tr("output"): "<span class="titokoneOutput">$utils.maybe($utils.join($titokoneState.output, ", "))</span>"</div>
+                                
+                                #if ($titokoneState.exitStatus.toString() == "SUCCESSFUL")
+                                    #foreach ($criterion in $customInputRelevantCriteria)
+                                        #if ($satisfiedCriteria && $satisfiedCriteria.contains($criterion.id))
+                                            #if (!$utils.isEmpty($criterion.getAcceptMessageForUser($tr.locale)))
+                                                <div class="criterion">
+                                                    <div class="accept">$criterion.getAcceptMessageForUser($tr.locale)</div>
+                                                </div>
+                                            #end
+                                        #else
+                                            #if (!$utils.isEmpty($criterion.getRejectMessageForUser($tr.locale)))
+                                                #if ($criterion.isQualityCriterion())
+                                                    #set($class = 'lacksQuality')
+                                                #else
+                                                    #set($class = 'reject')
+                                                #end
+                                                <div class="criterion">
+                                                    <div class="$class">$criterion.getRejectMessageForUser($tr.locale)</div>
+                                                </div>
+                                            #end
+                                        #end
+                                    #end
+                                #end
+                                
+                                #parse("student/frag/titokoneState.vm")
+                            
+                            #end
+                            
+                        #elseif ($customInputCompilationError)
+                            <div class="error">$tr.trp("compilation_error_%s", $customInputCompilationError)</div>
+                        #end
+                        
+                        <div id="taskResultsEnd"><!-- For CSS --></div>
+                    </div>
+                #end
+                
+                #if ($customInputModelSolutionState && $customInputModelSolutionState.exitStatus.toString() != "SUCCESSFUL")
+                    #set($exitStatus = $customInputModelSolutionState.exitStatus.toString())
+                    
+                    #set($exitStatusMsg = "exit_status_" + $exitStatus.toLowerCase())
+                    <div class="exitStatus error"><span class="label">$tr.tr("model_solution_error_label")</span> $tr.tr($exitStatusMsg)</div>
+                #end
+                
+                #if ($latestAnswer && $inputValidation && !$inputValidation.isEmpty())
+                    <table class="predefInput">
+                        <thead><tr><th colspan="3">$tr.tr("title_predefined_inputs")</th></tr></thead>
+                        
+                        #foreach ($validation in $inputValidation.entrySet())
+                            #set($input = $validation.key)
+                            #set($status = $validation.value)
+                            <tr class="predefInput">
+                                <td>
+                                    #if (!$input.isSecret())
+                                        #if ($input.input.isEmpty())
+                                            $tr.trp("title_empty_test_input")
+                                        #else
+                                            $tr.trp("title_public_test_input_%s", $input.input)
+                                        #end
+                                    #else
+                                        $tr.tr("title_secret_test_input")
+                                    #end
+                                </td>
+                                #if ($status == 'accepted')
+                                    <td class="accept">$tr.tr("test_input_validated")</td>
+                                #elseif ($status == 'lacksQuality')
+                                    <td class="lacksQuality">$tr.tr("test_input_lacks_quality")</td>
+                                #else
+                                    <td class="reject">$tr.tr("test_input_did_not_validate")</td>
+                                #end
+                                <td>
+                                    #if (!$input.isSecret())
+                                        <button class="runInput"><span class="jsdata">$input.input</span>$tr.tr("run_input")</button>
+                                    #end
+                                </td>
+                            </tr>
+                        #end
+                    </table>
+                #end
+                
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script type="text/javascript">
+<!--
+#literal()
+
+$(document).ready(function() {
+    $('button.runInput').click(function() {
+        var input = $(this).find('.jsdata').text();
+        $('input#taskInput').attr('value', input);
+        $('form#taskForm').get(0).submit();
+        return false;
+    });
+});
+
+#end
+//-->
+</script>
+

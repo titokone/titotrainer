@@ -1,0 +1,63 @@
+
+<h1>$tr.tr("title")</h1>
+
+<script type="text/javascript">
+<!--
+#literal()
+$(document).ready(function() {
+    $('table#taskList').addClass('tablesorter').tablesorter({
+        sortList: [[0, 0]],
+        headers: {
+            1: { // Disable sorting for the column with the links
+                sorter: false
+            }
+        }
+    });
+    
+    // Add a double confirmation to the delete button
+    $('a.deleteCourse').click(function() {
+        #end
+        var confirmFmt = $utils.quoteJavascript($tr.tr("course_%s_delete_confirmation"));
+        var confirm2Fmt = $utils.quoteJavascript($tr.tr("course_%s_delete_confirmation2"));
+        #literal()
+        var parentRow = $(this).parents('tr')[0];
+        var courseTitle = $(parentRow).find('.courseTitle').text();
+        return confirm(confirmFmt.replace(/\%s/, courseTitle)) && confirm(confirm2Fmt.replace(/\%s/, courseTitle));
+    });
+});
+
+#end
+-->
+</script>
+
+#if (!$courses.isEmpty())
+<table id="taskList">
+    <thead>
+        <tr>
+            <th>$tr.tr("header_name")</th>
+            #if ($can.deleteAny("Course"))
+                <th><!-- links --></th>
+            #end
+        </tr>
+    </thead>
+    <tbody>
+        #foreach ($course in $courses)
+            <tr>
+                <td class="course #if($course.hidden)hiddenCourse#end"><a class="courseTitle" href="$req.basePath/admin/course?id=$course.id">$utils.coalesce($course.name.getByPreference(true, $tr.locale), $tr.tr("unnamed"))</a></td>
+                #if ($can.deleteAny("Course"))
+                   <td>
+                        <a class="deleteCourse function dangerous" href="$req.basePath/admin/deletecourse?id=$course.id">$tr.tr("delete")</a>
+                    </td>
+                #end
+            </tr>
+        #end
+    </tbody>
+</table>
+#else
+    <p>$tr.tr("no_courses_found")</p>
+#end
+
+#if ($can.createAny("Course"))
+    <div class="function"><a href="$req.basePath/admin/course" class="function">$tr.tr("create_new_course")</a></div>
+#end
+

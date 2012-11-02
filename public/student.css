@@ -1,0 +1,100 @@
+h1 span.taskDifficulty {
+	font-size: 10pt;
+}
+
+#taskForm > table {
+    border: 0;
+}
+
+#taskForm > table > tbody > tr > td {
+    border: 0;
+}
+
+#taskForm > table > tbody > tr > td:first-child {
+    width: 50%;
+}
+
+#taskForm > table > tbody > tr > td + td {
+    width: 50%;
+    padding-left: 10pt;
+}
+
+input#taskInput {
+	width: 99%;
+}
+
+textarea#studentCodeTextArea {
+	width: 99%;
+}
+
+button#taskSubmitButton {
+	float: right;
+}
+
+input#infoField {
+	font-size: 10pt;
+}
+
+button#infoSubmit {
+	font-size: 10pt;
+}
+
+div.exitStatus {
+    font-size: 11pt;
+    margin-bottom: 1em;
+}
+
+div.exitStatus.success {
+    font-size: 12pt;
+}
+
+div.titokoneInput, div.titokoneOutput {
+    font-size: 11pt;
+    margin-bottom: 1em;
+}
+
+span.titokoneInput, span.titokoneOutput {
+    font-style: italic;
+}
+
+td.taskFormInputPart, td.taskFormResultPart {
+    vertical-align: top;
+}
+
+div.taskResults .titokoneState table {
+    margin: 0.5em;
+    width: auto;
+    float: left;
+}
+
+div.taskResults .titokoneState + * {
+    clear: both;
+}
+
+div.taskResults .criterion {
+    display: list-item;
+    font-weight: bold;
+    margin-bottom: 0.8em;
+}
+
+table.predefInput {
+    width: auto;
+    margin: 0.5em;
+    font-size: 10pt;
+}
+
+table.predefInput .accept, table.predefInput .reject {
+    font-weight: bold;
+}
+
+.taskInput {
+    font-weight: bold;
+}
+
+tr.codeArea td {
+    background-color: #FFF;
+}
+
+tr.dataArea td {
+    background-color: #EEE;
+}

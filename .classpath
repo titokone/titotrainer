@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/servlet-api.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/jasper.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/jsp-api.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/el-api.jar"/>
+	<classpathentry kind="var" path="TOMCAT_HOME/lib/annotations-api.jar"/>
+	<classpathentry kind="src" path="WEB-INF/src"/>
+	<classpathentry kind="src" output="tests/classes" path="tests/supportsrc"/>
+	<classpathentry kind="src" output="tests/classes" path="tests/src"/>
+	<classpathentry kind="src" output="tools/classes" path="tools/src"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/antlr-2.7.6.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/commons-collections-3.2.1-sources.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/commons-lang-2.4-sources.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/hibernate3.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/jakarta-oro-2.0.8.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/javassist-3.4.GA.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/jta-1.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/mockito-all-1.5.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/slf4j-api-1.5.3.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/slf4j-nop-1.5.3.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/hsqldb.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/ejb3-persistence.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/hibernate-commons-annotations.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/hibernate-annotations.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/hibernate-validator.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/postgresql-8.2-508.jdbc4.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/hamcrest-core-1.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/hamcrest-library-1.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/commons-io-1.4-sources.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/commons-io-1.4.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/log4j-1.2.15.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/titokone-1.203.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/velocity-1.6.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/junit-4.6.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/commons-fileupload-1.2.1.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/mailapi.jar"/>
+	<classpathentry kind="lib" path="WEB-INF/lib/smtp.jar"/>
+	<classpathentry kind="output" path="WEB-INF/classes"/>
+</classpath>

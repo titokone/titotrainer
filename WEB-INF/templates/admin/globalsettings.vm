@@ -1,0 +1,49 @@
+
+<h1>$tr.tr("global_settings_title")</h1>
+
+<form action="$req.basePath/admin/saveglobalsettings" method="post" accept-charset="utf-8">
+
+    <h2>$tr.tr("default_criterion_accept_reject_messages_title")</h2>
+    
+    <div>
+        #foreach ($ct in $criterionTypes)
+            #set($simpleName = $ct.criterionClass.simpleName)
+            <fieldset class="defaultCriterionMessages">
+                <legend class="criterionName">$simpleName</legend>
+                
+                <table>
+                    <tr>
+                        #foreach ($locale in $supportedLocales)
+                            <td>
+                                <div class="label">$locale.getDisplayName($tr.locale)</div>
+                                <label for="acceptMsg_${simpleName}_$locale">$tr.tr("accept_msg")</label>
+                                <textarea id="acceptMsg_${simpleName}_$locale" name="acceptMsg[$simpleName][$locale]" rows="3" cols="40">$utils.maybe($ct.getDefaultAcceptMessage($locale))</textarea>
+                                <label for="rejectMsg_${simpleName}_$locale">$tr.tr("reject_msg")</label>
+                                <textarea id="rejectMsg_${simpleName}_$locale" name="rejectMsg[$simpleName][$locale]" rows="3" cols="40">$utils.maybe($ct.getDefaultRejectMessage($locale))</textarea>
+                            </td>
+                        #end
+                    </tr>
+                </table>
+            </fieldset>
+        #end
+    </div>
+
+    <div>
+        <button type="submit">$tr.tr("save")</button>
+    </div>
+
+</form>
+
+<script type="text/javascript">
+<!--
+// Translate criteria
+// (somewhat inelegant)
+$('.criterionName').each(function() {
+    var key = $(this).text();
+    var translation = admin.criterion.tr[key];
+    if (translation) {
+        $(this).text(translation.title);
+    }
+});
+//-->
+</script>

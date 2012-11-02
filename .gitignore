@@ -1,0 +1,8 @@
+/classpath.txt
+/WEB-INF/classes
+/tests/classes
+/tools/classes
+/junit
+/javadoc
+/WEB-INF/conf/*.properties
+/work

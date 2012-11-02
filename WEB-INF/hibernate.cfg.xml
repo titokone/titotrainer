@@ -1,0 +1,65 @@
+<!DOCTYPE hibernate-configuration PUBLIC
+    "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+    "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <!--
+        NOTE: This is NOT a site-specific configuration file.
+        To configure connection parameters etc.,
+        edit WEB-INF/conf/db.properties instead.
+    -->
+    <session-factory>
+        <mapping class = "fi.helsinki.cs.titotrainer.app.model.Answer"       />
+        <mapping class = "fi.helsinki.cs.titotrainer.app.model.Category"     />
+        <mapping class = "fi.helsinki.cs.titotrainer.app.model.Course"       />
+        <mapping class = "fi.helsinki.cs.titotrainer.app.model.Criterion"    />
+        <!-- criteria -->
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.RegisterCriterion"              />
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.ModelRegisterCriterion"         />
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.SymbolCriterion"                />
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.ModelSymbolCriterion"           />
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.ScreenOutputCriterion"          />
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.ModelScreenOutputCriterion"     />
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.RequiredInstructionsCriterion"  />
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.ForbiddenInstructionsCriterion" />
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.CodeSizeCriterion"              />
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.DataSizeCriterion"              />
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.MaxStackSizeCriterion"          />
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.ExecutedInstructionsCriterion"  />
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.DataReferencesCriterion"        />
+            <mapping class = "fi.helsinki.cs.titotrainer.app.model.criteria.MemoryReferencesCriterion"      />
+        <!-- /criteria -->
+        <mapping class = "fi.helsinki.cs.titotrainer.app.model.CriterionType"/>
+        <mapping class = "fi.helsinki.cs.titotrainer.app.model.ExecStatus"   />
+        <mapping class = "fi.helsinki.cs.titotrainer.app.model.Input"        />
+        <mapping class = "fi.helsinki.cs.titotrainer.app.model.Task"         />
+        <mapping class = "fi.helsinki.cs.titotrainer.app.model.TString"      />
+        <mapping class = "fi.helsinki.cs.titotrainer.app.model.User"         />
+        <mapping class = "fi.helsinki.cs.titotrainer.app.model.Validation"   />
+        
+        <event type="post-load">
+            <listener class = "fi.helsinki.cs.titotrainer.framework.model.handler.ModelAccessChecker" />
+            <listener class = "org.hibernate.event.def.DefaultPostLoadEventListener" />
+        </event>
+        
+        <event type="pre-insert" >
+            <listener class = "fi.helsinki.cs.titotrainer.framework.model.handler.ModelAccessChecker" />
+        
+            <!-- DISABLED DUE TO BUG - see javadoc for details -->
+            <!--
+            <listener class = "fi.helsinki.cs.titotrainer.app.model.handler.AssociationValidator" />
+            -->
+        </event>
+        <event type="pre-update" >
+            <listener class = "fi.helsinki.cs.titotrainer.framework.model.handler.ModelAccessChecker" />
+        
+            <!-- DISABLED DUE TO BUG - see javadoc for details -->
+            <!--
+            <listener class = "fi.helsinki.cs.titotrainer.app.model.handler.AssociationValidator" />
+            -->
+        </event>
+        
+        <event type="pre-delete">
+            <listener class = "fi.helsinki.cs.titotrainer.framework.model.handler.ModelAccessChecker" />
+        </event>
+    </session-factory>
+</hibernate-configuration>

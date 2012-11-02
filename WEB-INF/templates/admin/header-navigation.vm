@@ -1,0 +1,15 @@
+#if ($user)
+    <div class="navigationItem">
+        <a href="$req.basePath/admin/courselist">$tr.tr("admin_navigation.course_list")</a>
+    </div>
+    #if ($can.accessPath("/admin/userlist"))
+        <div class="navigationItem">
+            <a href="$req.basePath/admin/userlist">$tr.tr("admin_navigation.user_list")</a>
+        </div>
+    #end
+    #if ($can.accessPath("/admin/globalsettings"))
+        <div class="navigationItem">
+            <a href="$req.basePath/admin/globalsettings">$tr.tr("admin_navigation.global_settings")</a>
+        </div>
+    #end
+#end

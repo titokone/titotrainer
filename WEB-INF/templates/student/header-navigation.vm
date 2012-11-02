@@ -1,0 +1,4 @@
+#if ($user)
+	<a href="$req.getBasePath()/student/tasklist">$tr.tr("student_navigation.task_list")</a>
+	<a href="$req.getBasePath()/student/personalinfo">$tr.tr("student_navigation.personal_info")</a>
+#end

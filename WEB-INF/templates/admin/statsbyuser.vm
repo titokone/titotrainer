@@ -1,0 +1,79 @@
+
+<h1>$tr.trp("stats_for_course_%s", $utils.coalesce($course.name.getByPreference(true, $tr.locale), "-"))</h1>
+
+#if (!$users.empty)
+    <table class="statsByUser">
+        <thead>
+            <tr>
+                <th class="userStudentNumber">$tr.tr("user_student_number")</th>
+                <th class="userRealName">$tr.tr("user_realname")</th>
+                <th class="username">$tr.tr("user_username")</th>
+                <th class="tasksSolved">$tr.tr("user_tasks_solved")</th>
+                <th class="tasksAttempted">$tr.tr("user_tasks_attempted")</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            #foreach ($userRow in $users)
+                #set($solved = $tasksSolved.get($userRow.id))
+                #set($attempted = $tasksAttempted.get($userRow.id))
+                #set($solvedPercent = (100 * $solved) / $totalTasks)
+                #set($attemptedPercent = (100 * $attempted) / $totalTasks)
+                <tr>
+                    <td class="userStudentNumber">$utils.maybe($userRow.studentNumber)</td>
+                    <td class="userRealName">$utils.coalesce($userRow.lastName, "?"), $utils.coalesce($userRow.firstName, "?")</td>
+                    <td class="username">$userRow.username</td>
+                    <td class="tasksSolved">
+                        <span class="tasksSolved">$solved</span> /
+                        <span class="totalTasks">$totalTasks</span>
+                        <span class="percentage">(<span class="tasksSolved">$solvedPercent%</span>)</span>
+                    </td>
+                    <td class="tasksAttempted">
+                        <span class="tasksAttempted">$attempted</span> /
+                        <span class="totalTasks">$totalTasks</span>
+                        <span class="percentage">(<span class="tasksAttempted">$attemptedPercent%</span>)</span>
+                    </td>
+                    <td><a href="$req.basePath/admin/userstats?courseId=$course.id&amp;userId=$userRow.id">$tr.tr("more_info")</a></td>
+                </tr>
+            #end
+        </tbody>
+    </table>
+#end
+
+<script type="text/javascript">
+<!--
+#literal()
+$(document).ready(function() {
+    $/*velocity bug workaround comment*/.tablesorter.addParser({
+        id: 'completion-percentage',
+        is: function(s) {
+            return false; // Never autodetect
+        },
+        format: function(s) {
+            try {
+                var $element = $('<div>' + s + '</div>');
+                return new Number($element.find('span:first').text());
+            } catch (e) {
+                return 0;
+            }
+        },
+        type: 'numeric'
+    });
+    $('table.statsByUser').addClass('tablesorter').tablesorter({
+        sortList: [[0, 0]],
+        headers: {
+            3: {
+                sorter: 'completion-percentage'
+            },
+            4: {
+                sorter: 'completion-percentage'
+            },
+            5: { // Disable sorting for the column with the links
+                sorter: false
+            }
+        }
+    });
+});
+#end
+//-->
+</script>

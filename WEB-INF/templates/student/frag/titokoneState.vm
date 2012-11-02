@@ -1,0 +1,126 @@
+<div class="titokoneState">
+
+    #set($exitStatus = $titokoneState.exitStatus.toString())
+    
+    #if ($exitStatus == "SUCCESSFUL")
+        #set($exitStatusClass = "success")
+        #set($exitStatusMsg = "exit_status_successful")
+    #else
+        #set($exitStatusClass = "error")
+        
+        #set($exitStatusMsg = "exit_status_" + $exitStatus.toLowerCase())
+    #end
+    
+    <div class="exitStatus $exitStatusClass">$tr.tr($exitStatusMsg)</div>
+
+    <table class="memory">
+        <thead>
+            <tr>
+                <th>$tr.tr("header_address")</th>
+                <th>$tr.tr("header_value")</th>
+                <th>$tr.tr("header_opCode")</th>
+            </tr>
+        </thead>
+        <tbody>
+            #set($memory = $titokoneState.memory)
+            #set($memoryTableEndIndex = 0)
+            #set($lastAddr = $memory.size() - 1)
+            #foreach ($memAddr in [0..$lastAddr])
+                #if ($memory.get($memAddr) != 0)
+                    #set($memoryTableEndIndex = $memAddr)
+                #end
+            #end
+            
+            #foreach ($memAddr in [0..$memoryTableEndIndex])
+                #set($memValue = $memory.get($memAddr))
+                #if ($memAddr < $titokoneState.getMemoryDataAreaStart())
+                    #set($rowClass = "codeArea")
+                #else
+                    #set($rowClass = "dataArea")
+                #end
+                <tr class="$rowClass">
+                    <td>$memAddr</td>
+                    <td>$memValue</td>
+                    <td>$utils.maybe($titokoneState.commandToString($memValue))</td>
+                </tr>
+            #end
+        </tbody>
+    </table>
+    
+    <table class="registers">
+        <thead>
+            <tr><th colspan="2">$tr.tr("header_registers")</th></tr>
+        </thead>
+        <tbody>
+            #foreach ($reg in [0..5]) 
+                <tr>
+                    <td>R$reg</td><td>$titokoneState.getGeneralRegisters().get($reg)</td>
+                </tr>
+            #end
+            <tr>
+                <td>SP</td><td>$titokoneState.getRegSP()</td>
+            </tr>
+            <tr>
+                <td>FP</td><td>$titokoneState.getRegFP()</td>
+            </tr>
+            <tr>
+                <td>PC</td><td>$titokoneState.getRegPC()</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <table class="exeInfo">
+        <thead>
+            <tr><th colspan="2">$tr.tr("head_exec_info")</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>$tr.tr("exec_instructions")</td>
+                <td>$titokoneState.getExecutedInstructions()</td>
+            </tr>
+            <tr>
+                <td>$tr.tr("code_area_size")</td>
+                <td>$titokoneState.getMemoryCodeAreaSize()</td>
+            </tr>
+            <tr>
+                <td>$tr.tr("data_area_size")</td>
+                <td>$titokoneState.getMemoryDataAreaSize()</td>
+            </tr>        
+            <tr>
+                <td>$tr.tr("mem_references")</td>
+                <td>$titokoneState.getMemoryTotalReferences()</td>
+            </tr>
+            <tr>
+                <td>$tr.tr("data_references")</td>
+                <td>$titokoneState.getMemoryDataReferences()</td>
+            </tr>
+            <tr>
+                <td>$tr.tr("peak_stack_heigth")</td>
+                <td>$titokoneState.getMaxStackSize()</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    #if ($titokoneState.symbols.size() > 0)
+        <table class="symbolsAndConstants">
+            <thead>
+                <tr>
+                    <th colspan="2">$tr.tr("header_symtab")</th>
+                </tr>
+                <tr>
+                    <th>$tr.tr("header_symbol")</th>
+                    <th>$tr.tr("header_address")</th>
+                </tr>
+            </thead>
+            <tbody>
+                #foreach ($str in $titokoneState.symbols.keySet())
+                    <tr>
+                        <td>$str</td>
+                        <td>$titokoneState.symbols.get($str)</td>
+                    </tr>
+                #end
+            </tbody>
+        </table>
+    #end
+
+</div>

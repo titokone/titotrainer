@@ -1,0 +1,219 @@
+@import url(tablesorter/tablesorter.css);
+
+/**********/
+/* Common */
+/**********/
+
+body {
+    font-family: "Verdana", sans-serif;
+    font-size: 8pt;
+}
+
+h1 {
+    font-size: 11pt;
+    font-weight: bold;
+    text-decoration: none;
+    margin-bottom: 1.7em;
+}
+
+h2 {
+    font-size: 11pt;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+h1 a,
+h2 a,
+h3 a,
+h4 a,
+h5 a,
+h6 a {
+    text-decoration: none;
+}
+
+.error {
+    color: red;
+}
+
+.warning {
+    color: #e56717;
+}
+
+.success {
+    color: green;
+}
+
+.dangerous {
+    color: red;
+    font-weight: bold;
+}
+
+.accept {
+    color: green;
+}
+
+.lacksQuality {
+    color: #e56717;
+}
+
+.obsoleted {
+    color: #e56717;
+}
+
+.reject {
+    color: red;
+}
+
+.hidden, .initiallyHidden {
+    display: none;
+}
+
+.jsdata {
+    display: none;
+}
+
+span.label, div.label {
+    font-weight: bold;
+}
+
+table {
+    border: solid #000000 1px;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    width: 100%;
+}
+
+table thead {
+    background-color: #ccddff;
+    color: black;
+    font-weight: bold;
+}
+
+table thead th {
+    padding: 5pt;
+}
+
+table th.checkbox,
+table td.checkbox {
+    /* todo: minimize width */
+}
+
+table td {
+    padding: 4pt;
+    border: solid #000000 1px;
+    border-collapse: collapse;
+    background-color: #FFFFFF;
+    text-align: left;
+}
+
+table tr.selected td {
+    background-color: #769DCF;
+}
+
+table.listlike {
+    border: none;
+    border-collapse: collapse;
+    width: auto;
+}
+
+table.listlike thead {
+    background-color: #ffffff;
+}
+
+table.listlike td {
+    border: none;
+    border-collapse: collapse;
+    padding-right: 3em;
+}
+
+a.function {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+div.function {
+    margin-top: 0.6em;
+    margin-bottom: 0.6em;
+}
+
+table td a.function {
+    margin-left: 2pt;
+    margin-right: 2pt;
+}
+
+form fieldset legend {
+    font-weight: bold;
+}
+
+form label {
+    display: block;
+    font-weight: bold;
+}
+
+form div.formField {
+    margin: 1.4em 0.8em 0 0;
+}
+
+div.formButtons {
+    margin: 1.4em 0.8em 0 0;
+}
+
+img.smallWarning {
+    width: 64px;
+    height: 64px;
+    float: right;
+}
+
+div.printModeLink {
+    font-weight: bold;
+    margin: 4pt;
+}
+
+.taskDesc {
+    font-family: monospace;
+}
+
+/**********/
+/* Header */
+/**********/
+
+#navigation {
+    font-size: 9pt;
+    padding: 0;
+    background: #eeeeff;
+    border-style: solid;
+    border-color: #000000;
+    border-width: 2pt;
+    margin-bottom: 1.5em;
+}
+
+#navigation * {
+    padding-top: 0.2em;
+    padding-bottom: 0.2em;
+    padding-left: 0.3em;
+    display: inline;
+}
+
+#navigation .apptitle {
+    font-family: impact;
+    font-size: 30px;
+}
+
+#navigation .logoutLink {
+    position: absolute; /* not ideal */
+    left: auto;
+    top: 1.5em;
+    right: 1.5em;
+}
+
+#navigation .moduleSwitchLink {
+    font-style: italic;
+}
+
+.globalMessages {
+    font-weight: bold;
+}
+    
+.globalMessageCategory {
+    margin: 0.8em;
+}

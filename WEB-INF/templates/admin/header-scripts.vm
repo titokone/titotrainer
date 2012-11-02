@@ -1,0 +1,9 @@
+<!-- Admin module scripts -->
+<script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/admin/translatedSlots.${tr.locale}.js"></script>
+<script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/admin/translatedSlots.js"></script>
+<script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/admin/criterion.${tr.locale}.js"></script>
+<script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/admin/criterion.js"></script>
+<script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/admin/criterionSet.${tr.locale}.js"></script>
+<script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/admin/criterionSet.js"></script>
+<script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/admin/input.${tr.locale}.js"></script>
+<script type="text/javascript" charset="utf-8" src="$req.basePath/public/js/admin/input.js"></script>

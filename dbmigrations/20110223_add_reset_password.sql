@@ -1,0 +1,1 @@
+ALTER TABLE "user" ADD COLUMN resetPasswordSha1 VARCHAR(255);

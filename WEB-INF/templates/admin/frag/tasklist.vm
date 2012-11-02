@@ -1,0 +1,208 @@
+#if ($categoryId)
+    #set($noCategoryColumn = true)
+#else
+    #set($noCategoryColumn = false)
+#end
+
+#if (!$tasks.empty)
+    <form action="$req.basePath/admin/taskbulkop" method="post">
+        <div>
+            <input type="hidden" name="returnTo" value="$req.attribs.queryPath" />
+            
+            #set($haveLinkCol = ($can.deleteAny("Category") || $can.createAny("Task")))
+            
+            <table id="taskList">
+                <thead>
+                    <tr>
+                        <th>$tr.tr("task_list_header_name")</th>
+                        <th>$tr.tr("task_list_header_type")</th>
+                        #if (!$noCategoryColumn)
+                            <th>$tr.tr("task_list_header_category")</th>
+                        #end
+                        <th>$tr.tr("task_list_header_author")</th>
+                        <th>$tr.tr("task_list_header_created")</th>
+                        <th>$tr.tr("task_list_header_modified")</th>
+                        #if ($haveLinkCol)
+                            <th><!-- links --></th>
+                        #end
+                        <th class="checkbox"><!-- selection --></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    #foreach ($task in $tasks)
+                        #set($titleClass="")
+                        #if ($task.hidden)
+                            #set($titleClass="hiddenTask")
+                        #end
+                        <tr>
+                            <td class="$titleClass"><a class="taskTitle" href="$req.basePath/admin/task?id=$task.id">$utils.coalesce($task.title.getByPreference(true, $tr.locale), $tr.tr("unnamed_task_title"))</a></td>
+                            <td>$task.type.getName($tr.locale)</td>
+                            #if (!$noCategoryColumn)
+                                <td>#if ($task.category)<a href="$req.basePath/admin/category?id=$task.category.id">$utils.coalesce($task.category.name.getByPreference(true, $tr.locale), $tr.tr("unnamed_category_title"))</a>#else $tr.tr("uncategorized")#end</td>
+                            #end
+                            <td>$task.creator.username</td>
+                            <td>$utils.formatShortDateTime($task.creationTime, $tr.locale)</td>
+                            <td>$utils.formatShortDateTime($task.modificationTime, $tr.locale)</td>
+                            #if ($haveLinkCol)
+                                <td>
+                                    #if ($can.createAny("Task"))
+                                        <a class="function modifyTaskAsNew" href="$req.basePath/admin/copytask?id=$task.id">$tr.tr("task_list_modify_as_new")</a>
+                                    #end
+                                    #if ($can.deleteAny("Task"))
+                                        #if ($categoryId)
+                                            #set($deleteUrl = "$req.basePath/admin/deletetask?id=$task.id&returnTo=category")
+                                        #else
+                                            #set($deleteUrl = "$req.basePath/admin/deletetask?id=$task.id&returnTo=course")
+                                        #end
+                                        <a class="function dangerous deleteTask" href="$deleteUrl">$tr.tr("task_list_delete")</a>
+                                    #end
+                                </td>
+                            #end
+                            <td class="checkbox">
+                                <input type="checkbox" class="selection" name="selected[$task.id]" value="$task.id" />#* The value is used by JS *#
+                            </td>
+                        </tr>
+                    #end
+                </tbody>
+            </table>
+            
+            <div class="taskBulkOp initiallyHidden">
+                #if ($can.deleteAny("Task"))
+                    <div>
+                        <button type="submit" class="deleteTasks" name="action" value="delete">$tr.tr('delete_selected')</button>
+                    </div>
+                #end
+                
+                #if ($user.inheritsRole($TitoBaseRole.getRoleByName("@ADMINISTRATOR")))
+                    <div class="selectAndButton">
+                        <select name="targetCourse">
+                            <option value=""></option>
+                            #foreach ($targetCourse in $courses)
+                                <option value="$targetCourse.id">$utils.coalesce($targetCourse.getName($tr.locale), "-")</option>
+                            #end
+                        </select>
+                        <button type="submit" class="copyTaskToCourse" name="action" value="copyToCourse">$tr.tr('copy_to_course')</button>
+                    </div>
+                #end
+                
+                #if ($can.updateAny("Task") && $can.updateAny("Category"))
+                    <div class="selectAndButton">
+                        <select name="targetCategory">
+                            <option value=""></option>
+                            #foreach ($targetCategory in $categories)
+                                <option value="$targetCategory.id">$utils.coalesce($targetCategory.getName($tr.locale), "-")</option>
+                            #end
+                        </select>
+                        <button type="submit" class="moveTaskToCategory" name="action" value="moveToCategory">$tr.tr('move_to_category')</button>
+                    </div>
+                #end
+                
+                <br />
+                
+                <div>
+                    <a href="#" class="saveTasks function" >$tr.tr('save_selected')</a>
+                </div>
+            </div>
+        </div>
+    </form>
+    
+    <script type="text/javascript">
+    <!--
+    #literal()
+    $(document).ready(function() {
+        // Make the task list sortable
+        $('table#taskList').addClass('tablesorter').tablesorter({
+            sortList: [[0, 0]],
+            headers: {
+            #end
+            #if ($noCategoryColumn)
+                5: { sorter: false },
+                6: { sorter: false }
+            #else
+                6: { sorter: false },
+                7: { sorter: false }
+            #end
+            #literal()
+            }
+        });
+
+        function confirmer(msg) {
+            return function() {
+                return confirm(msg);
+            }
+        }
+        
+        function confirmerWithTaskName(confirmFmt) {
+            return function() {
+                var parentRow = $(this).parents('tr')[0];
+                var taskTitle = $(parentRow).find('.taskTitle').text();
+                return confirm(confirmFmt.replace(/\%s/, taskTitle));
+            }
+        }
+        
+        // Add a confirmation to the task delete button and to bulk operations
+        #end
+        $('a.deleteTask').click(confirmerWithTaskName($utils.quoteJavascript($tr.tr("task_list_task_%s_delete_confirmation"))));
+        $('button.deleteTasks').click(confirmer($utils.quoteJavascript($tr.tr("bulk_delete_confirmation"))));
+        $('button.copyTaskToCourse').click(confirmer($utils.quoteJavascript($tr.tr("bulk_copy_to_course_confirmation"))));
+        $('button.moveTaskToCategory').click(confirmer($utils.quoteJavascript($tr.tr("bulk_move_to_category_confirmation"))));
+        #literal()
+
+        // Bulk operations
+        function selectedTaskIds() {
+            var ret = [];
+            $(':checkbox.selection:checked').each(function() {
+                ret.push(this.value);
+            });
+            return ret;
+        }
+        
+        function showOrHideBulkOps() {
+            var ids = selectedTaskIds();
+            var fileUrl = APP_CONFIG.basePath + "/admin/taskfile?ids=" + ids.join(',');
+            
+            $('a.saveTasks').attr('href', fileUrl);
+            if (ids.length > 0)
+                $('.taskBulkOp').show('slow');
+            else
+                $('.taskBulkOp').hide('slow');
+        }
+
+        $(':checkbox.selection:checked').parents('tr').addClass('selected');
+        showOrHideBulkOps();
+        
+        $(':checkbox.selection').change(function() {
+            showOrHideBulkOps();
+            
+            var row = $(this).parents('tr')[0];
+            if (this.checked) {
+                $(row).addClass('selected');
+            } else {
+                $(row).removeClass('selected');
+            }
+        });
+
+        function activateIfSet(select, $elems) {
+            if (select == null)
+                return;
+            function apply() {
+                if (this.options[this.selectedIndex].value)
+                    $elems.attr('disabled', '');
+                else
+                    $elems.attr('disabled', 'disabled');
+            }
+            $(select).change(apply);
+            apply.apply(select);
+        }
+
+        activateIfSet($('select[name=targetCourse]')[0], $('button.copyTaskToCourse'));
+        // Don't do that for categories because it's OK to move to no category
+        
+    });
+    #end
+    -->
+    </script>
+    
+#else
+    $tr.tr("no_tasks_found")
+#end

@@ -1,0 +1,64 @@
+
+#set($courseName = $utils.coalesce($course.name.getByPreference(true, $tr.locale), '-'))
+<h1>$tr.trp('title_for_course_%s', $courseName)</h1>
+
+#if ($results && !$results.isEmpty())
+    <form method="post" action="$req.basePath/admin/addloadedtasks?courseId=$course.id" accept-charset="utf-8">
+        <h3>$tr.tr("task_list_title")</h3>
+        
+        <div>
+            <table class="listlike">
+                <thead>
+                    <tr>
+                        <th>$tr.tr('th_task')</th>
+                        <th>$tr.tr('th_category')</th>
+                        <th>$tr.tr('th_selected')</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    #set($i = 0)
+                    #foreach ($result in $results)
+                        #set($selectedCat = false)
+                        
+                        #set($selectedCat = $selectedCategories.get($i))
+                        <tr>
+                            <td>$result.task.title.getByPreference(true, $tr.locale)</td>
+                            <td>
+                                <select name="category[$i]" id="category_$i">
+                                    #foreach ($entry in $categoryOptions.entrySet())
+                                        #if ($entry.key == $selectedCat)
+                                            #set($selected = $utils.noEscape('selected="selected"'))
+                                        #else
+                                            #set($selected = '')
+                                        #end
+                                        <option value="$entry.key" $selected>$entry.value</option>
+                                    #end
+                                </select>
+                            </td>
+                            <td><input type="checkbox" name="selected[$i]" id="selected_$i" checked="checked" value="1" /></td>
+                        </tr>
+                        #set($i = $i + 1)
+                    #end
+                </tbody>
+                <tfoot>
+                </tfoot>
+            </table>
+            
+            <button type="submit">$tr.tr('save')</button>
+        </div>
+    </form>
+    
+    <br />
+    <hr />
+#end
+
+<form method="post" action="$req.basePath/admin/doloadtasks?courseId=$course.id" accept-charset="utf-8" enctype="multipart/form-data">
+    <div>
+        <div class="formElement">
+            <label for="file">$tr.tr('choose_file')</label>
+            <input id="file" name="file" type="file" />
+        </div>
+        
+        <button type="submit">$tr.tr('load')</button>
+    </div>
+</form>

@@ -1,0 +1,7 @@
+Don't edit the .properties files in default/.
+Copy them one directory up into conf/ and
+edit them there instead.
+
+The default options needn't be repeated in the
+conf/*.properties. It's enough to only specify
+the changed attributes in those files.
