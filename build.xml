@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<project basedir="." default="build" name="nexttito">
+<project basedir="." default="build" name="titotrainer">
 	
     <property environment="env"/>
     <property file="build.properties" />
@@ -12,7 +12,7 @@
     <fail unless="tomcat_found"
           message="Tomcat directory not found. Please set it in build.properties."/>
 
-    <path id="nexttito.classpath">
+    <path id="titotrainer.classpath">
         <pathelement location="${TOMCAT_HOME}/lib/servlet-api.jar"/>
         <pathelement location="${TOMCAT_HOME}/lib/jasper.jar"/>
         <pathelement location="${TOMCAT_HOME}/lib/jsp-api.jar"/>
@@ -46,14 +46,14 @@
     	<pathelement location="WEB-INF/lib/mailapi.jar"/>
     	<pathelement location="WEB-INF/lib/smtp.jar"/>
     </path>
-    <path id="nexttito.test.classpath">
-        <path refid="nexttito.classpath"/>
+    <path id="titotrainer.test.classpath">
+        <path refid="titotrainer.classpath"/>
         <pathelement location="WEB-INF/lib/junit-4.6.jar"/>
         <pathelement location="WEB-INF/lib/mockito-all-1.5.jar"/>
         <pathelement location="tests/classes"/>
     </path>
-    <path id="nexttito.cli.classpath">
-        <path refid="nexttito.classpath"/>
+    <path id="titotrainer.cli.classpath">
+        <path refid="titotrainer.classpath"/>
         <pathelement location="tools/classes"/>
         <pathelement location="WEB-INF/lib/cli/xercesImpl.jar"/>
     </path>
@@ -67,7 +67,7 @@
 	<property name = "Path.JavaDoc"   location = "./javadoc"                     />
     <property name = "Path.Libraries" location = "./lib"                         />
 	<property name = "Path.Source"    location = "./WEB-INF/src"                 />
-	<property name = "Path.JavaDoc.Style" location = "./dev/javadoc/nexttito.css" />
+	<property name = "Path.JavaDoc.Style" location = "./dev/javadoc/titotrainer.css" />
 
 	<!-- ========= -->
     <!-- SHORTCUTS -->
@@ -93,7 +93,7 @@
     >
         <echo>Creating new database schema</echo>
         <java classname    = "fi.helsinki.cs.titotrainer.app.tools.SchemaTool"
-              classpathref = "nexttito.cli.classpath"
+              classpathref = "titotrainer.cli.classpath"
         >
             <arg value = "exec"   />
             <arg value = "create" />
@@ -111,7 +111,7 @@
 	>
 		<echo>Drop existing schema!</echo>
 		<java classname    = "fi.helsinki.cs.titotrainer.app.tools.SchemaTool"
-              classpathref = "nexttito.cli.classpath"
+              classpathref = "titotrainer.cli.classpath"
         >
             <arg value = "exec"   />
             <arg value = "drop" />
@@ -123,7 +123,7 @@
 	        name        = "Database.InsertTestdata"
 	>
         <java classname    = "fi.helsinki.cs.titotrainer.app.tools.InsertTestDbData"
-        	  classpathref = "nexttito.cli.classpath"
+        	  classpathref = "titotrainer.cli.classpath"
         />
 	</target>
 	
@@ -139,7 +139,7 @@
 	   	        sourcepath     = "${Path.Source}"
                 stylesheetfile = "${Path.JavaDoc.Style}"
 	   >
-	       <classpath refid="nexttito.classpath" />
+	       <classpath refid="titotrainer.classpath" />
            <doctitle>TitoTrainer 2</doctitle>
            <link href = "http://java.sun.com/javase/6/docs/api/" offline = "false" />
        </javadoc>
@@ -168,8 +168,8 @@
         </copy>
     	
     	<!-- Print the classpath into classpath.txt for the convenience of some CLI scripts -->
-    	<property name="nexttito.cli.classpath" refid="nexttito.cli.classpath" />
-    	<echo file="classpath.txt" message="${nexttito.cli.classpath}" />
+    	<property name="titotrainer.cli.classpath" refid="titotrainer.cli.classpath" />
+    	<echo file="classpath.txt" message="${titotrainer.cli.classpath}" />
     </target>
     
     <target name="clean" description="Clean all built files">
@@ -184,11 +184,11 @@
         <echo message="${ant.project.name}: ${ant.file}"/>
         <javac debug="true" debuglevel="${debuglevel}" destdir="WEB-INF/classes" source="${source}" target="${target}">
             <src path="WEB-INF/src"/>
-            <classpath refid="nexttito.classpath"/>
+            <classpath refid="titotrainer.classpath"/>
         </javac>
         <javac debug="true" debuglevel="${debuglevel}" destdir="work" source="${source}" target="${target}">
             <src path="work"/>
-            <classpath refid="nexttito.classpath"/>
+            <classpath refid="titotrainer.classpath"/>
         </javac>
     </target>
     
@@ -196,14 +196,14 @@
         <javac debug="true" debuglevel="${debuglevel}" destdir="tests/classes" source="${source}" target="${target}">
             <src path="tests/src"/>
             <src path="tests/supportsrc"/>
-            <classpath refid="nexttito.test.classpath"/>
+            <classpath refid="titotrainer.test.classpath"/>
         </javac>
     </target>
     
     <target depends="build" name="build-tools" description="Build all CLI tools">
         <javac debug="true" debuglevel="${debuglevel}" destdir="tools/classes" source="${source}" target="${target}">
             <src path="tools/src"/>
-            <classpath refid="nexttito.cli.classpath"/>
+            <classpath refid="titotrainer.cli.classpath"/>
         </javac>
     </target>
     
@@ -213,7 +213,7 @@
         <junit fork="yes" printsummary="yes">
             <formatter type="xml"/>
             <jvmarg line="-ea"/>
-            <classpath refid="nexttito.test.classpath" />
+            <classpath refid="titotrainer.test.classpath" />
             <batchtest todir="${junit.output.dir}">
                 <fileset dir="tests/src" />
             </batchtest>
