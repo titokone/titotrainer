@@ -2,9 +2,34 @@
 <h1>$tr.trp("stats_for_course_%s", $utils.coalesce($course.name.getByPreference(true, $tr.locale), "-"))</h1>
 
 #if (!$availableTasks.empty)
-  <div class="showOptions">
-      <a href="#">$tr.tr("show_options")</a>
-  </div>
+  #if ($hideOptions)
+      <script type="text/javascript">
+      <!--
+      #literal()
+      $(document).ready(function() {
+          $('.showOptions').click(function() {
+              $('.taskSelection').show();
+              $(this).hide();
+              return false;
+          });
+      });
+      #end
+      //-->
+      </script>
+      <div class="showOptions">
+          <a href="#">$tr.tr("show_options")</a>
+      </div>
+  #else
+      <script type="text/javascript">
+      <!--
+      #literal()
+      $(document).ready(function() {
+          $('.taskSelection').show();
+      });
+      #end
+      //-->
+      </script>
+  #end
 
   <div class="taskSelection">
       <form id="filterTasksForm" action="$req.basePath/admin/statsbyuser" method="get">
@@ -34,11 +59,6 @@
       <!--
       #literal()
       $(document).ready(function() {
-          $('.showOptions').click(function() {
-              $('.taskSelection').show();
-              $(this).hide();
-              return false;
-          });
           $('#filterTasks').click(function() {
               var taskIds = [];
               $('.taskSelection :checkbox[id^=task_]:checked').each(function() {

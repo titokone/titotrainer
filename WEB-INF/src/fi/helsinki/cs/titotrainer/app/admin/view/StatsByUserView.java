@@ -37,6 +37,7 @@ public class StatsByUserView extends TitoPageView<StatsByUserViewRequest> {
             throw new ErrorResponseException(404, "Course " + req.courseId);
         tr.put("course", course);
         tr.put("selectedTaskIds", req.taskIds);
+        tr.put("hideOptions", req.taskIds == null);
         
         List<User> users = hs.createQuery("FROM User WHERE courseId = ?")
                              .setLong(0, course.getId())
