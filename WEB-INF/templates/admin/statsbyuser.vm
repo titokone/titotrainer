@@ -2,6 +2,10 @@
 <h1>$tr.trp("stats_for_course_%s", $utils.coalesce($course.name.getByPreference(true, $tr.locale), "-"))</h1>
 
 #if (!$availableTasks.empty)
+  <div class="showOptions">
+      <a href="#">$tr.tr("show_options")</a>
+  </div>
+
   <div class="taskSelection">
       <form id="filterTasksForm" action="$req.basePath/admin/statsbyuser" method="get">
           <input type="hidden" id="courseId" name="courseId" value="$course.id" />
@@ -9,14 +13,14 @@
       </form>
       <div class="taskSelectionCheckboxes">
           #foreach ($task in $availableTasks)
-              <span>
+              <div>
                   #if (!$selectedTaskIds || $utils.inArray($task.id, $selectedTaskIds))
                       <input type="checkbox" id="task_$task.id" checked="checked" />
                   #else
                       <input type="checkbox" id="task_$task.id" />
                   #end
                   <label for="task_$task.id">$task.title.getByPreference(true, $tr.locale)</label>
-              </span>
+              </div>
           #end
       </div>
       <div class="selectAll">
@@ -30,6 +34,10 @@
       <!--
       #literal()
       $(document).ready(function() {
+          $('.showOptions').click(function() {
+              $('.taskSelection').show();
+              $(this).hide();
+          });
           $('#filterTasks').click(function() {
               var taskIds = [];
               $('.taskSelection :checkbox[id^=task_]:checked').each(function() {
