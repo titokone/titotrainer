@@ -1,13 +1,12 @@
 
-Sooner:
+- Mavenization would be nice.
 
-Later:
 - There remain issues with the print view.
 - Handle HTTP 404 better.
 - Database leaks (i.e. stuff doesn't get cascade-deleted)
     - Validations and exec statuses might leak.
     - TStrings leak like hell.
 
-Much later:
 - Handle field size limits properly on the UI level.
 - Cache Answer.isSuccessful().
+
