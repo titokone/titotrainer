@@ -170,6 +170,19 @@ th.tasksSolved {
     color: gray;
 }
 
+.taskSelection {
+    margin-bottom: 2.2em;
+}
+
+.taskSelection .selectAll {
+    margin-top: 0.8em;
+    margin-bottom: 1.2em;
+}
+
+.taskSelectionCheckboxes span {
+    white-space: nowrap;
+}
+
 /************************/
 /* Global settings view */
 /************************/

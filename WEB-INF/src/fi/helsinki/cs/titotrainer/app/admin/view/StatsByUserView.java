@@ -30,6 +30,7 @@ public class StatsByUserView extends TitoPageView<StatsByUserViewRequest> {
         if (course == null)
             throw new ErrorResponseException(404, "Course " + req.courseId);
         tr.put("course", course);
+        tr.put("selectedTaskIds", req.taskIds);
         
         List<User> users = hs.createQuery("FROM User WHERE courseId = ?")
                              .setLong(0, course.getId())
@@ -39,13 +40,14 @@ public class StatsByUserView extends TitoPageView<StatsByUserViewRequest> {
         AdminStatsViewUtils utils = new AdminStatsViewUtils(hs);
         
         // Get total number of visible tasks
-        tr.put("totalTasks", utils.getVisibleTaskCount(course.getId()));
+        tr.put("availableTasks", utils.getVisibleTasks(course.getId()));
+        tr.put("totalTasks", utils.getVisibleTaskCount(course.getId(), req.taskIds));
         
         // Get number of solved tasks for each user
         Map<Long, Integer> tasksAttempted = new HashMap<Long, Integer>();
         Map<Long, Integer> tasksSolved = new HashMap<Long, Integer>();
         for (User user : users) {
-            UserStats stats = utils.getUserStats(user.getId(), course.getId());
+            UserStats stats = utils.getUserStats(user.getId(), course.getId(), req.taskIds);
             tasksAttempted.put(user.getId(), stats.tasksAttempted);
             tasksSolved.put(user.getId(), stats.tasksSolved);
         }

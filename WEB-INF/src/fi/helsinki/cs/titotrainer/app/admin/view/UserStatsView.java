@@ -43,7 +43,7 @@ public class UserStatsView extends TitoPageView<UserStatsViewRequest> {
         tr.put("tasks", tasks);
         tr.put("totalTasks", tasks.size());
         
-        UserStats stats = utils.getUserStats(user.getId(), course.getId());
+        UserStats stats = utils.getUserStats(user.getId(), course.getId(), null);
         tr.put("answers", stats.answers);
         tr.put("tasksAttempted", stats.tasksAttempted);
         tr.put("tasksSolved", stats.tasksSolved);

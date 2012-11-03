@@ -36,7 +36,7 @@ import fi.helsinki.cs.titotrainer.framework.model.Bidirectional;
  * table "validation", encapsulated in {@link Validation}.
  * </p>
  * 
- * <p>Only one answer may be stored per student.</p>
+ * <p>Only one answer may be stored per student per task.</p>
  */
 @Entity
 @Table(name = "answer", uniqueConstraints = { @UniqueConstraint(columnNames = {"taskId", "userId"}) })

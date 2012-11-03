@@ -1,7 +1,59 @@
 
 <h1>$tr.trp("stats_for_course_%s", $utils.coalesce($course.name.getByPreference(true, $tr.locale), "-"))</h1>
 
-#if (!$users.empty)
+#if (!$availableTasks.empty)
+  <div class="taskSelection">
+      <form id="filterTasksForm" action="$req.basePath/admin/statsbyuser" method="get">
+          <input type="hidden" id="courseId" name="courseId" value="$course.id" />
+          <input type="hidden" id="taskIds" name="taskIds" value="" />
+      </form>
+      <div class="taskSelectionCheckboxes">
+          #foreach ($task in $availableTasks)
+              <span>
+                  #if (!$selectedTaskIds || $utils.inArray($task.id, $selectedTaskIds))
+                      <input type="checkbox" id="task_$task.id" checked="checked" />
+                  #else
+                      <input type="checkbox" id="task_$task.id" />
+                  #end
+                  <label for="task_$task.id">$task.title.getByPreference(true, $tr.locale)</label>
+              </span>
+          #end
+      </div>
+      <div class="selectAll">
+          <a href="#" class="select_all">$tr.tr("select_all")</a>
+          <a href="#" class="deselect_all">$tr.tr("deselect_all")</a>
+      </div>
+      <div class="buttons">
+          <button id="filterTasks">$tr.tr("filter_button")</button>
+      </div>
+      <script type="text/javascript">
+      <!--
+      #literal()
+      $(document).ready(function() {
+          $('#filterTasks').click(function() {
+              var taskIds = [];
+              $('.taskSelection :checkbox[id^=task_]:checked').each(function() {
+                  taskIds.push((/task_(\d+)/.exec(this.id))[1]);
+              });
+              $('#taskIds').val(taskIds.join(','));
+              $('#filterTasksForm').submit();
+          });
+          $('.select_all').click(function() {
+              $('.taskSelection :checkbox[id^=task_]').attr('checked', 'checked');
+              return false;
+          });
+          $('.deselect_all').click(function() {
+              $('.taskSelection :checkbox[id^=task_]').removeAttr('checked');
+              return false;
+          });
+      });
+      #end
+      //-->
+      </script>
+  </div>
+#end
+
+#if (!$users.empty && $totalTasks > 0)
     <table class="statsByUser">
         <thead>
             <tr>
@@ -38,42 +90,44 @@
             #end
         </tbody>
     </table>
-#end
-
-<script type="text/javascript">
-<!--
-#literal()
-$(document).ready(function() {
-    $/*velocity bug workaround comment*/.tablesorter.addParser({
-        id: 'completion-percentage',
-        is: function(s) {
-            return false; // Never autodetect
-        },
-        format: function(s) {
-            try {
-                var $element = $('<div>' + s + '</div>');
-                return new Number($element.find('span:first').text());
-            } catch (e) {
-                return 0;
-            }
-        },
-        type: 'numeric'
-    });
-    $('table.statsByUser').addClass('tablesorter').tablesorter({
-        sortList: [[0, 0]],
-        headers: {
-            3: {
-                sorter: 'completion-percentage'
+    
+    <script type="text/javascript">
+    <!--
+    #literal()
+    $(document).ready(function() {
+        $/*velocity bug workaround comment*/.tablesorter.addParser({
+            id: 'completion-percentage',
+            is: function(s) {
+                return false; // Never autodetect
             },
-            4: {
-                sorter: 'completion-percentage'
+            format: function(s) {
+                try {
+                    var $element = $('<div>' + s + '</div>');
+                    return new Number($element.find('span:first').text());
+                } catch (e) {
+                    return 0;
+                }
             },
-            5: { // Disable sorting for the column with the links
-                sorter: false
+            type: 'numeric'
+        });
+        $('table.statsByUser').addClass('tablesorter').tablesorter({
+            sortList: [[0, 0]],
+            headers: {
+                3: {
+                    sorter: 'completion-percentage'
+                },
+                4: {
+                    sorter: 'completion-percentage'
+                },
+                5: { // Disable sorting for the column with the links
+                    sorter: false
+                }
             }
-        }
+        });
     });
-});
+    #end
+    //-->
+    </script>
+#else
+    <p>$tr.tr("no_results")</p>
 #end
-//-->
-</script>
