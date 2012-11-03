@@ -37,6 +37,7 @@
           $('.showOptions').click(function() {
               $('.taskSelection').show();
               $(this).hide();
+              return false;
           });
           $('#filterTasks').click(function() {
               var taskIds = [];
