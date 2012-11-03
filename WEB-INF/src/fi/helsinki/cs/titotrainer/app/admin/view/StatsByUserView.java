@@ -1,7 +1,10 @@
 package fi.helsinki.cs.titotrainer.app.admin.view;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.hibernate.Session;
@@ -10,6 +13,7 @@ import fi.helsinki.cs.titotrainer.app.admin.misc.AdminStatsViewUtils;
 import fi.helsinki.cs.titotrainer.app.admin.misc.AdminStatsViewUtils.UserStats;
 import fi.helsinki.cs.titotrainer.app.admin.request.StatsByUserViewRequest;
 import fi.helsinki.cs.titotrainer.app.model.Course;
+import fi.helsinki.cs.titotrainer.app.model.Task;
 import fi.helsinki.cs.titotrainer.app.model.User;
 import fi.helsinki.cs.titotrainer.app.view.TitoPageView;
 import fi.helsinki.cs.titotrainer.framework.response.ErrorResponseException;
@@ -26,6 +30,8 @@ public class StatsByUserView extends TitoPageView<StatsByUserViewRequest> {
     @SuppressWarnings("unchecked")
     @Override
     protected void handle(StatsByUserViewRequest req, Session hs, TemplateRenderer tr, ViewResponse resp) throws ErrorResponseException {
+        final Locale locale = getTranslator(req).getLocale();
+        
         Course course = (Course)hs.get(Course.class, req.courseId);
         if (course == null)
             throw new ErrorResponseException(404, "Course " + req.courseId);
@@ -40,7 +46,16 @@ public class StatsByUserView extends TitoPageView<StatsByUserViewRequest> {
         AdminStatsViewUtils utils = new AdminStatsViewUtils(hs);
         
         // Get total number of visible tasks
-        tr.put("availableTasks", utils.getVisibleTasks(course.getId()));
+        List<Task> availableTasks = utils.getVisibleTasks(course.getId());
+        Collections.sort(availableTasks, new Comparator<Task>() {
+            @Override
+            public int compare(Task t1, Task t2) {
+                String title1 = t1.getTitle().getByPreference(true, locale);
+                String title2 = t2.getTitle().getByPreference(true, locale);
+                return title1.compareToIgnoreCase(title2);
+            }
+        });
+        tr.put("availableTasks", availableTasks);
         tr.put("totalTasks", utils.getVisibleTaskCount(course.getId(), req.taskIds));
         
         // Get number of solved tasks for each user
