@@ -184,6 +184,10 @@ th.tasksSolved {
     margin-bottom: 1.2em;
 }
 
+.taskSelection .buttons {
+    margin-top: 0.8em;
+}
+
 /************************/
 /* Global settings view */
 /************************/

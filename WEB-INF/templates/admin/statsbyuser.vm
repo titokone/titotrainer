@@ -36,6 +36,10 @@
           <input type="hidden" id="courseId" name="courseId" value="$course.id" />
           <input type="hidden" id="taskIds" name="taskIds" value="" />
       </form>
+      <div class="selectAll">
+          <a href="#" class="select_all">$tr.tr("select_all")</a>
+          <a href="#" class="deselect_all">$tr.tr("deselect_all")</a>
+      </div>
       <div class="taskSelectionCheckboxes">
           #foreach ($task in $availableTasks)
               <div>
@@ -47,10 +51,6 @@
                   <label for="task_$task.id">$task.title.getByPreference(true, $tr.locale)</label>
               </div>
           #end
-      </div>
-      <div class="selectAll">
-          <a href="#" class="select_all">$tr.tr("select_all")</a>
-          <a href="#" class="deselect_all">$tr.tr("deselect_all")</a>
       </div>
       <div class="buttons">
           <button id="filterTasks">$tr.tr("filter_button")</button>
